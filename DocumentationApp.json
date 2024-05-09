@@ -1,0 +1,10 @@
+{
+	"content" : [
+		"../_frameworkCoreBuild/build",
+		"jsComponentLib"
+	],
+	"ressourcePath" : [
+	
+	],
+	"liveReloadspecificPort" : 357730
+}
