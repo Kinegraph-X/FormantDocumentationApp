@@ -1,4 +1,4 @@
-const {App, TemplateFactory, CoreTypes, validators} = require('formant');
+const {App, TemplateFactory, CoreTypes, validators} = require('formantjs');
 const SourceInjectionUtility = App.componentTypes.SourceInjectionUtility;
 const sourceCodeIndex = require('cache/stringifiedSources').sourcesAsStringArrays;
 const SourceCodeViewCleanerRouter = App.componentTypes.SourceCodeViewCleanerRouter;

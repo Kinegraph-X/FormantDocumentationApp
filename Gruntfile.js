@@ -93,9 +93,9 @@ module.exports = function (grunt) {
 	
 	grunt.registerTask('default', ['echo']);
 	grunt.registerTask('sorcery', '', function() {
-		const sorceryProcess = exec('sorcery -i ' + destPath + '/' + currentName + '.js -o ' + distPath + '/' + currentName + '.js');
+		exec('sorcery -i ' + destPath + '/' + currentName + '.js -o ' + distPath + '/' + currentName + '.js');
 	});
-	grunt.registerTask('build', ['browserify:debug', 'exorcise:debug', 'sorcery']);
+	grunt.registerTask('build', ['browserify:debug', 'exorcise:debug', 'copy:publicAssets', 'copy:buildCopy', 'sorcery']);
 	
 
 };

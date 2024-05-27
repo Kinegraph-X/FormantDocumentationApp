@@ -1,7 +1,7 @@
 /*
  * Local Stylesheet for a table
  */
-const {CreateStyle} = require('formant');
+const {CreateStyle} = require('formantjs');
 
 module.exports = CreateStyle([
 	{

@@ -1,6 +1,6 @@
 {
 	"content" : [
-		"../_frameworkCoreBuild/build",
+		"../_formantCoreBundler-master/build",
 		"jsComponentLib"
 	],
 	"ressourcePath" : [

@@ -21222,7 +21222,8 @@ for (let type in validators) {
 const dependancyInjector = _dereq_('src/secondaryAppLauncher/dependancyInjector');
 
 module.exports = formantCore;
-},{"formantCore":2,"src/_buildTools/_UIpackages":39,"src/secondaryAppLauncher/dependancyInjector":38}],2:[function(_dereq_,module,exports){
+},{"formantCore":2,"src/_buildTools/_UIpackages":38,"src/secondaryAppLauncher/dependancyInjector":39}],2:[function(_dereq_,module,exports){
+(function (global){(function (){
 "use strict";
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.formantCore = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof _dereq_&&_dereq_;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof _dereq_&&_dereq_,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_dereq_,module,exports){
 "use strict";
@@ -21976,14 +21977,13 @@ module.exports = SpecialDependencyInjector;
 //		window = global;
 //}
 
-// TODO : Should not polute the namespace of this function : think seriously of removing the affectation to vars, as we only need to "execute" the require
 
 if (typeof Object.getOwnPropertyDescriptor(String.prototype, 'escapeRegExp') === 'undefined') { 
-	var Str = _dereq_('src/extendedNative/string');
-	var Arr = _dereq_('src/extendedNative/array');
-	var Bool = _dereq_('src/extendedNative/boolean');
-	var Obj = _dereq_('src/extendedNative/object');
-	var Regex = _dereq_('src/extendedNative/regexp');
+	_dereq_('src/extendedNative/string');
+	_dereq_('src/extendedNative/array');
+	_dereq_('src/extendedNative/boolean');
+	_dereq_('src/extendedNative/object');
+	_dereq_('src/extendedNative/regexp');
 }
 var Validate = _dereq_('src/integrated_libs_&_forks/Validate');
 var Hamster = _dereq_('src/integrated_libs_&_forks/Hamster');
@@ -22014,7 +22014,7 @@ var classConstructor = (function() {
 	
 //	console.log(knownIDs);
 	var launch = function(customOptions) {
-		
+		console.log('appLauncher');
 		debugMode = window.location && window.location.href.match(/[\?&]debug=(.+)&?/)
 		if (debugMode && debugMode[0])
 			debugMode = debugMode[0];
@@ -22422,6 +22422,41 @@ var ComponentPickingInputDef = function(uniqueID, options, model) {
 	// Some CSS stuff (styles are directly injected in the main def below)
 	/**@CSSifySlots placeholder */
 
+	var hostStyles = [
+
+	{
+		"selector": ":host, div",
+		"boxSizing": "border-box",
+		"background": "none",
+		"border": "0",
+		"boxShadow": "none",
+		"margin": "0",
+		"outline": "0",
+		"padding": "0",
+		"verticalAlign": "baseline"
+	},
+	{
+		"selector": ":host",
+		"display": "flex",
+		"flex": "1 1 0",
+		"alignItems": "center",
+		"justifyContent": "space-between",
+		"border": "1px solid #383838",
+		"margin": "2px",
+		"padding": "3px",
+		"borderRadius": "2px"
+	},
+	{
+		"selector": "label",
+		"padding": "2px 7px"
+	}
+
+	];
+	var hostStylesUseCache = {
+		use : false,
+		nameInCache : 'ComponentPickingInputHostStyles'
+	}
+
 	var buttonStyles = [
 
 	{
@@ -22456,41 +22491,6 @@ var ComponentPickingInputDef = function(uniqueID, options, model) {
 	var buttonStylesUseCache = {
 		use : false,
 		nameInCache : 'ComponentPickingInputButtonStyles'
-	}
-
-	var hostStyles = [
-
-	{
-		"selector": ":host, div",
-		"boxSizing": "border-box",
-		"background": "none",
-		"border": "0",
-		"boxShadow": "none",
-		"margin": "0",
-		"outline": "0",
-		"padding": "0",
-		"verticalAlign": "baseline"
-	},
-	{
-		"selector": ":host",
-		"display": "flex",
-		"flex": "1 1 0",
-		"alignItems": "center",
-		"justifyContent": "space-between",
-		"border": "1px solid #383838",
-		"margin": "2px",
-		"padding": "3px",
-		"borderRadius": "2px"
-	},
-	{
-		"selector": "label",
-		"padding": "2px 7px"
-	}
-
-	];
-	var hostStylesUseCache = {
-		use : false,
-		nameInCache : 'ComponentPickingInputHostStyles'
 	}
 	
 	
@@ -23324,6 +23324,30 @@ var RootViewComponentDef = function(uniqueID, options, model) {
 		nameInCache : 'RootViewComponentPageStyles'
 	}
 
+	var headerStyles = [
+
+	{
+		"selector": ":host",
+		"display": "flex",
+		"width": "100%",
+		"flex": "1 1 0",
+		"flexFlow": "row",
+		"boxSizing": "border-box",
+		"background": "0",
+		"border": "0",
+		"boxShadow": "0",
+		"margin": "0",
+		"outline": "0",
+		"padding": "0",
+		"verticalAlign": "baseline"
+	}
+
+	];
+	var headerStylesUseCache = {
+		use : false,
+		nameInCache : 'RootViewComponentHeaderStyles'
+	}
+
 	var hostStyles = [
 
 	{
@@ -23358,30 +23382,6 @@ var RootViewComponentDef = function(uniqueID, options, model) {
 	var hostStylesUseCache = {
 		use : false,
 		nameInCache : 'RootViewComponentHostStyles'
-	}
-
-	var headerStyles = [
-
-	{
-		"selector": ":host",
-		"display": "flex",
-		"width": "100%",
-		"flex": "1 1 0",
-		"flexFlow": "row",
-		"boxSizing": "border-box",
-		"background": "0",
-		"border": "0",
-		"boxShadow": "0",
-		"margin": "0",
-		"outline": "0",
-		"padding": "0",
-		"verticalAlign": "baseline"
-	}
-
-	];
-	var headerStylesUseCache = {
-		use : false,
-		nameInCache : 'RootViewComponentHeaderStyles'
 	}
 	
 
@@ -42306,9 +42306,11 @@ module.exports = StyleRule;
 });
 
 
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
 },{}],3:[function(_dereq_,module,exports){
 "use strict";
-module.exports = (function() {return {"_configurationFiles":["_arias&glyphsDef.js"],"_recentlyCreated":[],"basics":["AbstractSlider","ClickableComponent","GenericTitledPanelComponent","InnerReactiveComponent","KeyValuePairComponent","MultisetAccordionComponent","SimpleText","SimpleTextReplace","SpecializedTypedListComponent","Tooltip","TypedListComponent","VisibleStateComponent"],"forms":["BoolSelector","CancelButton","CheckboxInput","EMailInput","Fieldset","FormComponent","LabelledButton","NamedButton","PasswordInput","SubmitButton","TextInput","TextareaInput","UsernameInput"],"lists":[],"specials":["SourceCodeViewCleanerRouter.js","SourceCodeViewRouter.js","SourceCodeViewRouterForExternalSources.js","SourceInjectionUtility.js"],"tables":["ExtensibleTable"],"tabs":["ComponentTabPanel","TabPanel"],"trees":[],"utilities":["SpinnerComponent"],"validators":["apipasswordInputDef.js","emailInputDef.js","filenameInputDef.js","mapcontentInputDef.js","passwordInputDef.js","usernameInputDef.js"]};})();
+module.exports = (function() {return {"_configurationFiles":["_arias&glyphsDef.js"],"basics":["AbstractSlider","ClickableComponent","GenericTitledPanelComponent","InnerReactiveComponent","KeyValuePairComponent","MultisetAccordionComponent","SimpleText","SimpleTextReplace","SpecializedTypedListComponent","Tooltip","TypedListComponent","VisibleStateComponent"],"forms":["BoolSelector","CancelButton","CheckboxInput","EMailInput","Fieldset","FormComponent","LabelledButton","NamedButton","PasswordInput","SubmitButton","TextInput","TextareaInput","UsernameInput"],"specials":["SourceCodeViewCleanerRouter.js","SourceCodeViewRouter.js","SourceCodeViewRouterForExternalSources.js","SourceInjectionUtility.js"],"tables":["ExtensibleTable"],"tabs":["ComponentTabPanel","TabPanel"],"utilities":["SpinnerComponent"],"validators":["apipasswordInputDef.js","emailInputDef.js","filenameInputDef.js","mapcontentInputDef.js","passwordInputDef.js","usernameInputDef.js"]};})();
 },{}],4:[function(_dereq_,module,exports){
 "use strict";
 module.exports = (function() {return ["apipasswordInputDef.js","emailInputDef.js","filenameInputDef.js","mapcontentInputDef.js","passwordInputDef.js","usernameInputDef.js"];})();
@@ -44141,30 +44143,6 @@ module.exports = SpinnerComponent;
 
 },{"formantCore":2}],38:[function(_dereq_,module,exports){
 "use strict";
-const {App, Components, ReactiveDataset, ComponentSet} = _dereq_('formantCore');
-
-// Components relying on core components
-Components.CompositorComponent.createAppLevelExtendedComponent();
-
-//temporary tests during the re-organisation of the component-lib
-if (typeof App.componentTypes.KeyValueList !== 'undefined')
-	App.componentTypes.KeyValueList.prototype.render = function(DOMNodeId) {
-		new App.DelayedDecoration(DOMNodeId, this, this.listTemplate.getHostDef());
-	};
-if (typeof App.componentTypes.ScrollSlider !== 'undefined')
-	App.componentTypes.ScrollSlider.prototype.render = function(DOMNodeId) {
-		new App.DelayedDecoration(DOMNodeId, this);
-	};
-if (typeof App.componentTypes.SlidingPanel !== 'undefined')
-	App.componentTypes.SlidingPanel.prototype.render = function(DOMNodeId) {
-		new App.DelayedDecoration(DOMNodeId, this);
-	};
-if (typeof App.componentTypes.ImgPlaceholder !== 'undefined')
-	App.componentTypes.ImgPlaceholder.prototype.render = function(DOMNodeId) {
-		new App.DelayedDecoration(DOMNodeId, this);
-	};
-},{"formantCore":2}],39:[function(_dereq_,module,exports){
-"use strict";
 /**
  * @indexer UIpackageList
  * 
@@ -44173,14 +44151,13 @@ if (typeof App.componentTypes.ImgPlaceholder !== 'undefined')
 const fs  = _dereq_('fs');
 
 module.exports = function(grunt, options) {
-	
 	var categories = {
 //			none : [],
 //			minimal : ['minimal'],		// minimal bundling is broken, don't use until big fix
 //			special : ['special'],
 //			video : ['video'],
 //			std : ['minimal', 'boxes', 'panels', 'structs', 'titles'],
-			all : ['basics', 'forms', 'lists', 'tables', 'tabs', 'trees', 'specials']
+			all : ['basics', 'forms', 'tables', 'tabs', 'trees', 'specials']
 	}
 	
 	options = options || {};
@@ -44208,8 +44185,8 @@ module.exports = function(grunt, options) {
 		var prefix = 'module.exports = (function() {return ',
 			postfix = ';})();';
 		
-		grunt.file.write(grunt.config.data.pathToProject + 'cache/UIpackagesFolderCache.js', prefix + JSON.stringify(packageTree) + postfix);
-		grunt.file.write(grunt.config.data.pathToProject + 'cache/UIvalidatorsFileCache.js', prefix + JSON.stringify(validatorTree) + postfix);
+		grunt.file.write(grunt.config.data.pathToComponentLib + '/cache/UIpackagesFolderCache.js', prefix + JSON.stringify(packageTree) + postfix);
+		grunt.file.write(grunt.config.data.pathToComponentLib + '/cache/UIvalidatorsFileCache.js', prefix + JSON.stringify(validatorTree) + postfix);
 	}
 	// if (fs.existsSync('cache/UIpackagesFolderCache.js') && fs.existsSync('cache/UIvalidatorsFileCache.js'))
 	else  {
@@ -44225,6 +44202,9 @@ module.exports = function(grunt, options) {
 	// some files call this helper to get the list of validators and pass null as UIpackage
 	if (typeof categories[options.UIpackage] !== 'undefined') {
 		categories[options.UIpackage].forEach(function(dir) {
+			// case of empty folders
+			if (!packageTree[dir])
+				return;
 			options.UIpackageList = options.UIpackageList.concat(
 					packageTree[dir].map(function(item) {
 						path = '';
@@ -44250,7 +44230,31 @@ module.exports = function(grunt, options) {
 		return {packageList : UIpackageList, validatorList : UIvalidatorList};
 
 };
-},{"cache/UIpackagesFolderCache":3,"cache/UIvalidatorsFileCache":4,"fs":40}],40:[function(_dereq_,module,exports){
+},{"cache/UIpackagesFolderCache":3,"cache/UIvalidatorsFileCache":4,"fs":40}],39:[function(_dereq_,module,exports){
+"use strict";
+const {App, Components, ReactiveDataset, ComponentSet} = _dereq_('formantCore');
+
+// Components relying on core components
+Components.CompositorComponent.createAppLevelExtendedComponent();
+
+//temporary tests during the re-organisation of the component-lib
+if (typeof App.componentTypes.KeyValueList !== 'undefined')
+	App.componentTypes.KeyValueList.prototype.render = function(DOMNodeId) {
+		new App.DelayedDecoration(DOMNodeId, this, this.listTemplate.getHostDef());
+	};
+if (typeof App.componentTypes.ScrollSlider !== 'undefined')
+	App.componentTypes.ScrollSlider.prototype.render = function(DOMNodeId) {
+		new App.DelayedDecoration(DOMNodeId, this);
+	};
+if (typeof App.componentTypes.SlidingPanel !== 'undefined')
+	App.componentTypes.SlidingPanel.prototype.render = function(DOMNodeId) {
+		new App.DelayedDecoration(DOMNodeId, this);
+	};
+if (typeof App.componentTypes.ImgPlaceholder !== 'undefined')
+	App.componentTypes.ImgPlaceholder.prototype.render = function(DOMNodeId) {
+		new App.DelayedDecoration(DOMNodeId, this);
+	};
+},{"formantCore":2}],40:[function(_dereq_,module,exports){
 
 },{}],"src/UI/categories/basics/AbstractSlider/AbstractSlider.js":[function(_dereq_,module,exports){
 "use strict";
@@ -47205,9 +47209,9 @@ module.exports = validator;
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{}],4:[function(_dereq_,module,exports){
-module.exports = {sourcesAsStringArrays : {"minimalHelloWorld":[{"name":"minimalHelloWorldLauncher","content":"const {App, TemplateFactory} = require('formant');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst template = TemplateFactory.createHostDef({\r\n\t\t\t\tnodeName: 'span',\r\n\t\t\t\tattributes: [\r\n\t\t\t\t\t{ textContent: 'Hello World!' }\r\n\t\t\t\t]\r\n\t\t\t});\r\n\r\n\t\t\tconst myHelloWorld = new App.componentTypes.ComponentWithView(template);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myHelloWorld);\r\n\t\t}\r\n\t}\r\n}"}],"reactiveHelloWorld":[{"name":"reactiveHelloWorldLauncher","content":"const {App, TemplateFactory} = require('formant');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst outerTemplate = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName: 'p',\r\n\t\t\t\t\tstates: [\r\n\t\t\t\t\t\t{ someState: 'Hello World!' }\r\n\t\t\t\t\t]\r\n\t\t\t\t}),\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\tnodeName: 'span',\r\n\t\t\t\t\t\treactOnParent: [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\tfrom: 'someState',\r\n\t\t\t\t\t\t\t\tto: 'text'\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\r\n\t\t\tconst myComponent = new App.componentTypes.CompoundComponent(outerTemplate);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myComponent);\r\n\t\t}\r\n\t}\r\n}"}],"stylingBasics":[{"name":"stylingBasicsLauncher","content":"const {App, TemplateFactory, CreateStyle} = require('formant');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst style = [\r\n\t\t\t    {\r\n\t\t\t        selector : ':host',\r\n\t\t\t        color : '#FF0000'    // red\r\n\t\t\t    }\r\n\t\t\t];\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Automagic: using a DOM custom-element shall scope the style on the shadowRoot.\r\n\t\t\t * Consequence: we can't use the DOM \"textContent\" attribute here.\r\n\t\t\t * => let's use the SimpleText Component we've discovered in the last chapter.\r\n\t\t\t*/\r\n\t\t\tconst template = TemplateFactory.createHostDef({\r\n\t\t\t    nodeName : 'my-span',\r\n\t\t\t    props : [\r\n\t\t\t        {text : 'Hello World!'}\r\n\t\t\t    ],\r\n\t\t\t    sWrapper : CreateStyle(style)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tconst myHelloWorld = new App.componentTypes.SimpleText(template);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myHelloWorld);\r\n\t\t}\r\n\t}\r\n}"}],"form101":[{"name":"form101Launcher","content":"const {App, TemplateFactory} = require('formant');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst myFormTemplate = TemplateFactory.createDef({\r\n\t\t\t    host : TemplateFactory.createHostDef({\r\n\t\t\t        props : [\r\n\t\t\t            {action : 'url/of/my/endpoint'}\r\n\t\t\t        ],\r\n\t\t\t        subscribeOnChild: [\r\n\t\t\t            {\r\n\t\t\t                 on : 'submit',\r\n\t\t\t                 subscribe : function(e) {this.trigger('submit')}\r\n\t\t\t            }\r\n\t\t\t        ]\r\n\t\t\t    }),\r\n\t\t\t    members : [\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'UsernameInput',\r\n\t\t\t             attributes : [\r\n\t\t\t                 {title : '-Username'}\r\n\t\t\t             ],\r\n\t\t\t             section : 0\r\n\t\t\t         }),\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'EMailInput',\r\n\t\t\t             attributes : [\r\n\t\t\t                 {title : '-EMail'}\r\n\t\t\t             ],\r\n\t\t\t             section : 0\r\n\t\t\t         }),\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'SubmitButton',\r\n\t\t\t             props : [\r\n\t\t\t                 {text : 'Register'}\r\n\t\t\t             ],\r\n\t\t\t             section : 1\r\n\t\t\t         })\r\n\t\t\t    ]\r\n\t\t\t});\r\n\t\t\tconst myForm = new App.componentTypes.FormComponent(myFormTemplate);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myForm);\r\n\t\t}\r\n\t}\r\n}"}],"list101":[{"name":"list101Launcher","content":"const {App, TemplateFactory} = require('formant');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t// UL\r\n\t\t\tconst listDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\tnodeName : 'ul',\r\n\t\t\t\t}),\r\n\t\t\t\tmembers : listItems.map(\r\n\t\t\t\t\t// LI as \"member-views\" of the component\r\n\t\t\t\t\t(item) => TemplateFactory.createDef({\r\n\t\t\t\t\t\tnodeName: 'li',\r\n\t\t\t\t\t\tattributes: [\r\n\t\t\t\t\t\t\t{ textContent: item }\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t})\r\n\t\t\t\t)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tconst ulComponent = new App.componentTypes.ComponentWithView(listDef);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, ulComponent);\r\n\t\t}\r\n\t}\r\n}"}],"reactiveListComponent":[{"name":"reactiveListComponentLauncher","content":"const {App} = require('formant');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciation of the list:\r\n\t\t\t * by default, the IteratingComponent generates a ul-li structure\r\n\t\t\t * As in Formant, explicitely passing null as the template is supported,\r\n\t\t\t * let's rely here on the default behavior of the component.\r\n\t\t\t */\r\n\t\t\tconst ulComponent = new App.coreComponents.IteratingComponent(null)\r\n\r\n\t\t\t/*\r\n\t\t\t * An example of override would be:\r\n\t\t\t * const hostDef = TemplateFactory.createHostDef({\r\n\t\t\t *\t\tnodeName : 'section',\r\n\t\t\t *\t});\r\n\t\t\t *\r\n\t\t\t * \tconst slotDef :TemplateFactory.createDef({\r\n\t\t\t *\t\thost : TemplateFactory.createDef({\r\n\t\t\t *\t\t\ttype : 'SimpleText',\r\n\t\t\t *\t\t\tnodeName : 'article'\r\n\t\t\t *\t\t})\r\n\t\t\t *\t})\r\n\t\t\t * const ulComponent = new App.coreComponents.IteratingComponent(hostDef, slotDef)\r\n\t\t\t */\r\n\t\t\t\r\n\t\t\t// Pass data to the IteratingComponent\r\n\t\t\tulComponent.acquireData(listItems);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, ulComponent);\r\n\t\t}\r\n\t}\r\n}"}],"customReactiveList":[{"name":"customReactiveListLauncher","content":"const {App, TemplateFactory} = require('formant');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * For this example, let's roughly say that we need a list of \"p\" elements in a \"div\"\r\n\t\t\t */\r\n\t\t\tconst listHostTemplate = TemplateFactory.createHostDef({\r\n\t\t\t\tnodeName : 'div',\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Define your own implementation for the list-item:\r\n\t\t\t *\r\n\t\t\t * The IteratingComponent expects a stream named \"text\" to be implemented.\r\n\t\t\t * Here, we rely on an abstract component-type given by the framework (ComponentWithView),\r\n\t\t\t * and we excplicitely implement the \"text\" stream,.\r\n\t\t\t */\r\n\t\t\t\r\n\t\t\tconst listItemTemplate = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\ttype : 'ComponentWithView',\r\n\t\t\t\t\tnodeName : 'p',\r\n\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t{text : undefined}\r\n\t\t\t\t\t],\r\n\t\t\t\t\treactOnSelf : [\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\tcbOnly : true,\r\n\t\t\t\t\t\t\tfrom : 'text',\r\n\t\t\t\t\t\t\tsubscribe : App.componentTypes.ComponentWithView.prototype.appendTextFromValueOnView\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t]\r\n\t\t\t\t})\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t// Instanciate the list: it is empty for now, it's just a \"div\" node\r\n\t\t\tconst listComponent = new App.coreComponents.IteratingComponent(listHostTemplate, listItemTemplate);\r\n\t\t\t\r\n\t\t\t// And populate it :)\r\n\t\t\tlistComponent.acquireData(listItems);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, listComponent);\r\n\t\t}\r\n\t}\r\n}"}],"table101":[{"name":"table101Launcher","content":"const {App, TemplateFactory, ReactiveDataset} = require('formant');\r\n\r\nconst buildData = require('src/App/helpers/table101DataBuilder');\r\nconst localStylesheet = require('src/App/codeSamples/table101StyleDef');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Build the schematic definition of the table\r\n\t\t\t */\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\t\r\n\t\t\tconst rowDef = TemplateFactory.createDef({\r\n\t\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\tsection : 1,\t\t\t\t\t// the \"section 1\" corresponds to the second subSection of the table\r\n\t\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t\t{id : undefined},\r\n\t\t\t\t\t\t\t{label : undefined}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t}),\r\n\t\t\t\t\t/*\r\n\t\t\t\t\t * We could have used Array.map(), here:\r\n\t\t\t\t\t * (as we do later on, here, in the \"tableDef\" template,\r\n\t\t\t\t\t * or in the \"Implementing bahaviors\" chapter)\r\n\t\t\t\t\t * Still, as we're in a documentation, let's illustrate\r\n\t\t\t\t\t * an explicit shape for a definition (both shapes are, of course, equivalent).\r\n\t\t\t\t\t */\r\n\t\t\t\t\tmembers : [\r\n\t\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\tfrom : 'id', \t\t// 'id' is the first column's name\r\n\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\tfrom : 'label', \t// 'label' is the second column's name\r\n\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t})\r\n\t\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tvar tableDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName : 'smart-table',\r\n\t\t\t\t\t/* \r\n\t\t\t\t\t * Local stylesheet\r\n\t\t\t\t\t */ \r\n\t\t\t\t\tsWrapper : localStylesheet\r\n\t\t\t\t}),\r\n\t\t\t\tsubSections : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'thead'}),\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'tbody'})\r\n\t\t\t\t],\r\n\t\t\t\t/*\r\n\t\t\t\t * As the header-elements are already known,\r\n\t\t\t\t * let's define them explicitely as a \"member-view\"\r\n\t\t\t\t * in the template of the table.\r\n\t\t\t\t */\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createDef({\r\n\t\t\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\t\t\tsection : 0\t\t\t\t\t// the \"section 0\" corresponds to the first subSection of the table\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'th',\r\n\t\t\t\t\t\t\t\tattributes : [\r\n\t\t\t\t\t\t\t\t\t{textContent : columnName}\r\n\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t)\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciate the component\r\n\t\t\t */\r\n\t\t\tconst myTable = new App.componentTypes.CompoundComponent(tableDef);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Inject & Bind data reactively\r\n\t\t\t */\r\n\t\t\tconst rows = new ReactiveDataset(\r\n\t\t\t\tnull,\t\t\t\t\t\t// only special use cases\r\n\t\t\t\tmyTable,\t\t\t\t\t// the parent of the components which shall be instanciated\r\n\t\t\t\trowDef,\t\t\t\t\t\t// the template for the components which shall be instanciated\r\n\t\t\t\tcolumnNames\t\t\t\t\t// the schema of the dataset\r\n\t\t\t);\r\n\t\t\t\r\n\t\t\t// buildData() returns an array of objects of type RactiveDataset.Item\r\n\t\t\t// and, here, of the following form :\r\n\t\t\t// \t[\r\n\t\t\t//\t\t{id : string, label : string}\r\n\t\t\t//\t]\r\n\t\t\t// (cause we've declared the column names as being the schema of the dataset)\r\n\t\t\t// The buildData helper function makes use of the factory provided by the instance of \r\n\t\t\t// the ReactiveDataset to type its own items.\r\n\t\t\tconst tableContent = buildData(10, rows);\r\n\t\t\trows.pushApply(tableContent);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Job done !\r\n\t\t\t */\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"},{"name":"table101DataBuilder","content":"const dummyData = {\r\n\tadjectives : [\"pretty\", \"large\", \"big\", \"small\", \"tall\", \"short\", \"long\", \"handsome\", \"plain\", \"quaint\", \"clean\", \"elegant\", \"easy\", \"angry\", \"crazy\", \"helpful\", \"mushy\", \"odd\", \"unsightly\", \"adorable\", \"important\", \"inexpensive\", \"cheap\", \"expensive\", \"fancy\"],\r\n\tcolours : [\"red\", \"yellow\", \"blue\", \"green\", \"pink\", \"brown\", \"purple\", \"brown\", \"white\", \"black\", \"orange\"],\r\n\tnouns : [\"table\", \"chair\", \"house\", \"bbq\", \"desk\", \"car\", \"pony\", \"cookie\", \"sandwich\", \"burger\", \"pizza\", \"mouse\", \"keyboard\"]\r\n};\r\n\r\nfunction buildData(count, appData) {\r\n\tconst data = [];\r\n\tlet itemStr = '';\r\n\tfor (let i = 0; i < count; i++) {\r\n\t\titemStr = dummyData.adjectives[randomOn(dummyData.adjectives.length)] + ' '\r\n\t\t\t\t+ dummyData.colours[randomOn(dummyData.colours.length)] + ' '\r\n\t\t\t\t+ dummyData.nouns[randomOn(dummyData.nouns.length)];\r\n\t\t\r\n\t\tdata.push(appData.newItem(\r\n\t\t\t\t\t\ti.toString(),\r\n\t\t\t\t\t\titemStr\r\n\t\t\t\t\t));\r\n\t}\r\n\treturn data;\r\n}\r\nfunction randomOn(max) {\r\n\treturn (Math.random() * max) | 0;\r\n}\r\n\r\nmodule.exports = buildData;\r\n"},{"name":"table101StyleDef","content":"/*\r\n * Local Stylesheet for a table\r\n */\r\nconst {CreateStyle} = require('formant');\r\n\r\nmodule.exports = CreateStyle([\r\n\t{\r\n\t\tselector: ':host',\r\n\t\tbackground: '#012B39',\r\n\t\tborderRadius: '0.25em',\r\n\t\tborderCollapse: 'collapse',\r\n\t\tmargin: '1em'\r\n\t},\r\n\t{\r\n\t\tselector: 'th',\r\n\t\tborderBottom: '1px solid #364043',\r\n\t\tcolor: '#E2B842',\r\n\t\tfontSize: '0.85em',\r\n\t\tfontWeight: '600',\r\n\t\tpadding: '0.5em 1em',\r\n\t\ttextAlign: 'left'\r\n\t},\r\n\t{\r\n\t\tselector: 'td',\r\n\t\tcolor: '#fff',\r\n\t\tfontWeight: '400',\r\n\t\tpadding: '0.65em 1em'\r\n\t},\r\n\t{\r\n\t\tselector: '.disabled td',\r\n\t\tcolor: '#4F5F64'\r\n\t},\r\n\t{\r\n\t\tselector: 'tbody tr',\r\n\t\ttransition: 'background 0.25s ease'\r\n\t},\r\n\t{\r\n\t\tselector: 'tbody tr:hover',\r\n\t\tbackground: '#014055'\r\n\t},\r\n\t{\r\n\t\tselector : 'tbody tr[selected]',\r\n\t\tbackgroundColor : '#115065'\r\n\t}\r\n]);"}],"tableComponent":[{"name":"tableComponentLauncher","content":"const {App} = require('formant');\r\nconst buildData = require('src/App/helpers/tableComponentDataBuilder');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst TableComponent = App.componentTypes.ExtensibleTable;\r\n\t\t\t\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\tconst myTable = new TableComponent();\r\n\t\t\tmyTable.setColumnsCount(2, columnNames);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Contrary to the table101 implementation,\r\n\t\t\t * buildData() only needs to return a array of string-arrays.\r\n\t\t\t * Internally, the ExtensibleTable component will convert it to\r\n\t\t\t * an array of objects of type ReactiveDataset.Item.\r\n\t\t\t * \r\n\t\t\t * (in the case of the ExtensibleTable, the ReactiveDataset.Item\r\n\t\t\t * has the following form :\r\n\t\t\t *\t\t{rowContentAsArray : [string, string]}\r\n\t\t\t * (a string for each declared column)\r\n\t\t\t */\r\n\t\t\tconst tableData = buildData(10);\r\n\t\t\tmyTable.acquireData(tableData);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"},{"name":"tableComponentDataBuilder","content":"const dummyData = {\r\n    adjectives : [\"pretty\", \"large\", \"big\", \"small\", \"tall\", \"short\", \"long\", \"handsome\", \"plain\", \"quaint\", \"clean\", \"elegant\", \"easy\", \"angry\", \"crazy\", \"helpful\", \"mushy\", \"odd\", \"unsightly\", \"adorable\", \"important\", \"inexpensive\", \"cheap\", \"expensive\", \"fancy\"],\r\n    colours : [\"red\", \"yellow\", \"blue\", \"green\", \"pink\", \"brown\", \"purple\", \"brown\", \"white\", \"black\", \"orange\"],\r\n    nouns : [\"table\", \"chair\", \"house\", \"bbq\", \"desk\", \"car\", \"pony\", \"cookie\", \"sandwich\", \"burger\", \"pizza\", \"mouse\", \"keyboard\"]\r\n};\r\n\r\nfunction buildData(count) {\r\n    const data = [];\r\n    let itemStr = '';\r\n    for (let i = 0; i < count; i++) {\r\n\t\titemStr = dummyData.adjectives[randomOn(dummyData.adjectives.length)] + ' '\r\n\t\t\t\t+ dummyData.colours[randomOn(dummyData.colours.length)] + ' '\r\n\t\t\t\t+ dummyData.nouns[randomOn(dummyData.nouns.length)];\r\n\t\t\r\n        data.push([i.toString(), itemStr]);\r\n    }\r\n    return data;\r\n}\r\nfunction randomOn(max) {\r\n    return (Math.random() * max) | 0;\r\n}\r\n\t\r\nmodule.exports = buildData;\r\n"}],"behaviorsTableSelect":[{"name":"behaviorsTableSelect","content":"const {App, TemplateFactory, ReactiveDataset} = require('formant');\r\n\r\nconst buildData = require('src/App/helpers/table101DataBuilder');\r\nconst localStylesheet = require('src/App/codeSamples/table101StyleDef');\r\n\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\t/*\r\n\t\t\t * Add style to illustrate the behavior\r\n\t\t\t */\r\n\t\t\tlocalStylesheet.setProp('tbody tr', 'cursor', 'pointer');\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Build the schematic definition of the table\r\n\t\t\t */\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\t\r\n\t\t\tconst rowDef = TemplateFactory.createDef({\r\n\t\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\t\ttype : 'ClickableComponent',\r\n\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\tsection : 1,\r\n\t\t\t\t\t\tstates : [\r\n\t\t\t\t\t\t\t{id : undefined},\r\n\t\t\t\t\t\t\t{selected : undefined}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t\t{label : undefined}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\tfrom : 'selected',\r\n\t\t\t\t\t\t\t\tto : 'selected',\r\n\t\t\t\t\t\t\t\tmap : function(componentKey) {return componentKey === this._key ? 'selected' : null} \r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\tsubscribeOnSelf : [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\ton : 'clicked_ok',\r\n\t\t\t\t\t\t\t\tsubscribe : function(e) {this.trigger('update', {changeSelected : this._key})}\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t}),\r\n\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\t\t\tfrom : columnName,\r\n\t\t\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t\t)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tvar tableDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName : 'smart-table',\r\n\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t{selected : undefined}\r\n\t\t\t\t\t],\r\n\t\t\t\t\tsubscribeOnChild : [\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\ton : 'update',\r\n\t\t\t\t\t\t\tsubscribe : function(e) {\r\n\t\t\t\t\t\t\t\tthis.streams.selected.value = e.data.changeSelected;\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t],\r\n\t\t\t\t\tsWrapper : localStylesheet\r\n\t\t\t\t}),\r\n\t\t\t\tsubSections : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'thead'}),\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'tbody'})\r\n\t\t\t\t],\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createDef({\r\n\t\t\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\t\t\tsection : 0\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'th',\r\n\t\t\t\t\t\t\t\tattributes : [\r\n\t\t\t\t\t\t\t\t\t{textContent : columnName}\r\n\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t)\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciate the component\r\n\t\t\t */\r\n\t\t\tconst myTable = new App.componentTypes.CompoundComponent(tableDef);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Inject & Bind data reactively\r\n\t\t\t */\r\n\t\t\tconst rows = new ReactiveDataset(\r\n\t\t\t\tnull,\t\t\t\t\t\t// only special use cases\r\n\t\t\t\tmyTable,\t\t\t\t\t// the parent of the components which shall be instanciated\r\n\t\t\t\trowDef,\t\t\t\t\t\t// the template for the components which shall be instanciated\r\n\t\t\t\tcolumnNames\t\t\t\t\t// the schema of the dataset\r\n\t\t\t);\r\n\t\t\t\r\n\t\t\tconst tableContent = buildData(10, rows);\r\n\t\t\trows.pushApply(tableContent);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"}]}};
+module.exports = {sourcesAsStringArrays : {"minimalHelloWorld":[{"name":"minimalHelloWorldLauncher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst template = TemplateFactory.createHostDef({\r\n\t\t\t\tnodeName: 'span',\r\n\t\t\t\tattributes: [\r\n\t\t\t\t\t{ textContent: 'Hello World!' }\r\n\t\t\t\t]\r\n\t\t\t});\r\n\r\n\t\t\tconst myHelloWorld = new App.componentTypes.ComponentWithView(template);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myHelloWorld);\r\n\t\t}\r\n\t}\r\n}"}],"reactiveHelloWorld":[{"name":"reactiveHelloWorldLauncher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst outerTemplate = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName: 'p',\r\n\t\t\t\t\tstates: [\r\n\t\t\t\t\t\t{ someState: 'Hello World!' }\r\n\t\t\t\t\t]\r\n\t\t\t\t}),\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\tnodeName: 'span',\r\n\t\t\t\t\t\treactOnParent: [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\tfrom: 'someState',\r\n\t\t\t\t\t\t\t\tto: 'text'\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\r\n\t\t\tconst myComponent = new App.componentTypes.CompoundComponent(outerTemplate);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myComponent);\r\n\t\t}\r\n\t}\r\n}"}],"stylingBasics":[{"name":"stylingBasicsLauncher","content":"const {App, TemplateFactory, CreateStyle} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst style = [\r\n\t\t\t    {\r\n\t\t\t        selector : ':host',\r\n\t\t\t        color : '#FF0000'    // red\r\n\t\t\t    }\r\n\t\t\t];\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Automagic: using a DOM custom-element shall scope the style on the shadowRoot.\r\n\t\t\t * Consequence: we can't use the DOM \"textContent\" attribute here.\r\n\t\t\t * => let's use the SimpleText Component we've discovered in the last chapter.\r\n\t\t\t*/\r\n\t\t\tconst template = TemplateFactory.createHostDef({\r\n\t\t\t    nodeName : 'my-span',\r\n\t\t\t    props : [\r\n\t\t\t        {text : 'Hello World!'}\r\n\t\t\t    ],\r\n\t\t\t    sWrapper : CreateStyle(style)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tconst myHelloWorld = new App.componentTypes.SimpleText(template);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myHelloWorld);\r\n\t\t}\r\n\t}\r\n}"}],"form101":[{"name":"form101Launcher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst myFormTemplate = TemplateFactory.createDef({\r\n\t\t\t    host : TemplateFactory.createHostDef({\r\n\t\t\t        props : [\r\n\t\t\t            {action : 'url/of/my/endpoint'}\r\n\t\t\t        ],\r\n\t\t\t        subscribeOnChild: [\r\n\t\t\t            {\r\n\t\t\t                 on : 'submit',\r\n\t\t\t                 subscribe : function(e) {this.trigger('submit')}\r\n\t\t\t            }\r\n\t\t\t        ]\r\n\t\t\t    }),\r\n\t\t\t    members : [\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'UsernameInput',\r\n\t\t\t             attributes : [\r\n\t\t\t                 {title : '-Username'}\r\n\t\t\t             ],\r\n\t\t\t             section : 0\r\n\t\t\t         }),\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'EMailInput',\r\n\t\t\t             attributes : [\r\n\t\t\t                 {title : '-EMail'}\r\n\t\t\t             ],\r\n\t\t\t             section : 0\r\n\t\t\t         }),\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'SubmitButton',\r\n\t\t\t             props : [\r\n\t\t\t                 {text : 'Register'}\r\n\t\t\t             ],\r\n\t\t\t             section : 1\r\n\t\t\t         })\r\n\t\t\t    ]\r\n\t\t\t});\r\n\t\t\tconst myForm = new App.componentTypes.FormComponent(myFormTemplate);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myForm);\r\n\t\t}\r\n\t}\r\n}"}],"list101":[{"name":"list101Launcher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t// UL\r\n\t\t\tconst listDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\tnodeName : 'ul',\r\n\t\t\t\t}),\r\n\t\t\t\tmembers : listItems.map(\r\n\t\t\t\t\t// LI as \"member-views\" of the component\r\n\t\t\t\t\t(item) => TemplateFactory.createDef({\r\n\t\t\t\t\t\tnodeName: 'li',\r\n\t\t\t\t\t\tattributes: [\r\n\t\t\t\t\t\t\t{ textContent: item }\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t})\r\n\t\t\t\t)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tconst ulComponent = new App.componentTypes.ComponentWithView(listDef);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, ulComponent);\r\n\t\t}\r\n\t}\r\n}"}],"reactiveListComponent":[{"name":"reactiveListComponentLauncher","content":"const {App} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciation of the list:\r\n\t\t\t * by default, the IteratingComponent generates a ul-li structure\r\n\t\t\t * As in Formant, explicitely passing null as the template is supported,\r\n\t\t\t * let's rely here on the default behavior of the component.\r\n\t\t\t */\r\n\t\t\tconst ulComponent = new App.coreComponents.IteratingComponent(null)\r\n\r\n\t\t\t/*\r\n\t\t\t * An example of override would be:\r\n\t\t\t * const hostDef = TemplateFactory.createHostDef({\r\n\t\t\t *\t\tnodeName : 'section',\r\n\t\t\t *\t});\r\n\t\t\t *\r\n\t\t\t * \tconst slotDef :TemplateFactory.createDef({\r\n\t\t\t *\t\thost : TemplateFactory.createDef({\r\n\t\t\t *\t\t\ttype : 'SimpleText',\r\n\t\t\t *\t\t\tnodeName : 'article'\r\n\t\t\t *\t\t})\r\n\t\t\t *\t})\r\n\t\t\t * const ulComponent = new App.coreComponents.IteratingComponent(hostDef, slotDef)\r\n\t\t\t */\r\n\t\t\t\r\n\t\t\t// Pass data to the IteratingComponent\r\n\t\t\tulComponent.acquireData(listItems);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, ulComponent);\r\n\t\t}\r\n\t}\r\n}"}],"customReactiveList":[{"name":"customReactiveListLauncher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * For this example, let's roughly say that we need a list of \"p\" elements in a \"div\"\r\n\t\t\t */\r\n\t\t\tconst listHostTemplate = TemplateFactory.createHostDef({\r\n\t\t\t\tnodeName : 'div',\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Define your own implementation for the list-item:\r\n\t\t\t *\r\n\t\t\t * The IteratingComponent expects a stream named \"text\" to be implemented.\r\n\t\t\t * Here, we rely on an abstract component-type given by the framework (ComponentWithView),\r\n\t\t\t * and we excplicitely implement the \"text\" stream,.\r\n\t\t\t */\r\n\t\t\t\r\n\t\t\tconst listItemTemplate = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\ttype : 'ComponentWithView',\r\n\t\t\t\t\tnodeName : 'p',\r\n\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t{text : undefined}\r\n\t\t\t\t\t],\r\n\t\t\t\t\treactOnSelf : [\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\tcbOnly : true,\r\n\t\t\t\t\t\t\tfrom : 'text',\r\n\t\t\t\t\t\t\tsubscribe : App.componentTypes.ComponentWithView.prototype.appendTextFromValueOnView\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t]\r\n\t\t\t\t})\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t// Instanciate the list: it is empty for now, it's just a \"div\" node\r\n\t\t\tconst listComponent = new App.coreComponents.IteratingComponent(listHostTemplate, listItemTemplate);\r\n\t\t\t\r\n\t\t\t// And populate it :)\r\n\t\t\tlistComponent.acquireData(listItems);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, listComponent);\r\n\t\t}\r\n\t}\r\n}"}],"table101":[{"name":"table101Launcher","content":"const {App, TemplateFactory, ReactiveDataset} = require('formantjs');\r\n\r\nconst buildData = require('src/App/helpers/table101DataBuilder');\r\nconst localStylesheet = require('src/App/codeSamples/table101StyleDef');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Build the schematic definition of the table\r\n\t\t\t */\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\t\r\n\t\t\tconst rowDef = TemplateFactory.createDef({\r\n\t\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\tsection : 1,\t\t\t\t\t// the \"section 1\" corresponds to the second subSection of the table\r\n\t\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t\t{id : undefined},\r\n\t\t\t\t\t\t\t{label : undefined}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t}),\r\n\t\t\t\t\t/*\r\n\t\t\t\t\t * We could have used Array.map(), here:\r\n\t\t\t\t\t * (as we do later on, here, in the \"tableDef\" template,\r\n\t\t\t\t\t * or in the \"Implementing bahaviors\" chapter)\r\n\t\t\t\t\t * Still, as we're in a documentation, let's illustrate\r\n\t\t\t\t\t * an explicit shape for a definition (both shapes are, of course, equivalent).\r\n\t\t\t\t\t */\r\n\t\t\t\t\tmembers : [\r\n\t\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\tfrom : 'id', \t\t// 'id' is the first column's name\r\n\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\tfrom : 'label', \t// 'label' is the second column's name\r\n\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t})\r\n\t\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tvar tableDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName : 'smart-table',\r\n\t\t\t\t\t/* \r\n\t\t\t\t\t * Local stylesheet\r\n\t\t\t\t\t */ \r\n\t\t\t\t\tsWrapper : localStylesheet\r\n\t\t\t\t}),\r\n\t\t\t\tsubSections : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'thead'}),\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'tbody'})\r\n\t\t\t\t],\r\n\t\t\t\t/*\r\n\t\t\t\t * As the header-elements are already known,\r\n\t\t\t\t * let's define them explicitely as a \"member-view\"\r\n\t\t\t\t * in the template of the table.\r\n\t\t\t\t */\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createDef({\r\n\t\t\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\t\t\tsection : 0\t\t\t\t\t// the \"section 0\" corresponds to the first subSection of the table\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'th',\r\n\t\t\t\t\t\t\t\tattributes : [\r\n\t\t\t\t\t\t\t\t\t{textContent : columnName}\r\n\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t)\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciate the component\r\n\t\t\t */\r\n\t\t\tconst myTable = new App.componentTypes.CompoundComponent(tableDef);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Inject & Bind data reactively\r\n\t\t\t */\r\n\t\t\tconst rows = new ReactiveDataset(\r\n\t\t\t\tnull,\t\t\t\t\t\t// only special use cases\r\n\t\t\t\tmyTable,\t\t\t\t\t// the parent of the components which shall be instanciated\r\n\t\t\t\trowDef,\t\t\t\t\t\t// the template for the components which shall be instanciated\r\n\t\t\t\tcolumnNames\t\t\t\t\t// the schema of the dataset\r\n\t\t\t);\r\n\t\t\t\r\n\t\t\t// buildData() returns an array of objects of type RactiveDataset.Item\r\n\t\t\t// and, here, of the following form :\r\n\t\t\t// \t[\r\n\t\t\t//\t\t{id : string, label : string}\r\n\t\t\t//\t]\r\n\t\t\t// (cause we've declared the column names as being the schema of the dataset)\r\n\t\t\t// The buildData helper function makes use of the factory provided by the instance of \r\n\t\t\t// the ReactiveDataset to type its own items.\r\n\t\t\tconst tableContent = buildData(10, rows);\r\n\t\t\trows.pushApply(tableContent);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Job done !\r\n\t\t\t */\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"},{"name":"table101DataBuilder","content":"const dummyData = {\r\n\tadjectives : [\"pretty\", \"large\", \"big\", \"small\", \"tall\", \"short\", \"long\", \"handsome\", \"plain\", \"quaint\", \"clean\", \"elegant\", \"easy\", \"angry\", \"crazy\", \"helpful\", \"mushy\", \"odd\", \"unsightly\", \"adorable\", \"important\", \"inexpensive\", \"cheap\", \"expensive\", \"fancy\"],\r\n\tcolours : [\"red\", \"yellow\", \"blue\", \"green\", \"pink\", \"brown\", \"purple\", \"brown\", \"white\", \"black\", \"orange\"],\r\n\tnouns : [\"table\", \"chair\", \"house\", \"bbq\", \"desk\", \"car\", \"pony\", \"cookie\", \"sandwich\", \"burger\", \"pizza\", \"mouse\", \"keyboard\"]\r\n};\r\n\r\nfunction buildData(count, appData) {\r\n\tconst data = [];\r\n\tlet itemStr = '';\r\n\tfor (let i = 0; i < count; i++) {\r\n\t\titemStr = dummyData.adjectives[randomOn(dummyData.adjectives.length)] + ' '\r\n\t\t\t\t+ dummyData.colours[randomOn(dummyData.colours.length)] + ' '\r\n\t\t\t\t+ dummyData.nouns[randomOn(dummyData.nouns.length)];\r\n\t\t\r\n\t\tdata.push(appData.newItem(\r\n\t\t\t\t\t\ti.toString(),\r\n\t\t\t\t\t\titemStr\r\n\t\t\t\t\t));\r\n\t}\r\n\treturn data;\r\n}\r\nfunction randomOn(max) {\r\n\treturn (Math.random() * max) | 0;\r\n}\r\n\r\nmodule.exports = buildData;\r\n"},{"name":"table101StyleDef","content":"/*\r\n * Local Stylesheet for a table\r\n */\r\nconst {CreateStyle} = require('formantjs');\r\n\r\nmodule.exports = CreateStyle([\r\n\t{\r\n\t\tselector: ':host',\r\n\t\tbackground: '#012B39',\r\n\t\tborderRadius: '0.25em',\r\n\t\tborderCollapse: 'collapse',\r\n\t\tmargin: '1em'\r\n\t},\r\n\t{\r\n\t\tselector: 'th',\r\n\t\tborderBottom: '1px solid #364043',\r\n\t\tcolor: '#E2B842',\r\n\t\tfontSize: '0.85em',\r\n\t\tfontWeight: '600',\r\n\t\tpadding: '0.5em 1em',\r\n\t\ttextAlign: 'left'\r\n\t},\r\n\t{\r\n\t\tselector: 'td',\r\n\t\tcolor: '#fff',\r\n\t\tfontWeight: '400',\r\n\t\tpadding: '0.65em 1em'\r\n\t},\r\n\t{\r\n\t\tselector: '.disabled td',\r\n\t\tcolor: '#4F5F64'\r\n\t},\r\n\t{\r\n\t\tselector: 'tbody tr',\r\n\t\ttransition: 'background 0.25s ease'\r\n\t},\r\n\t{\r\n\t\tselector: 'tbody tr:hover',\r\n\t\tbackground: '#014055'\r\n\t},\r\n\t{\r\n\t\tselector : 'tbody tr[selected]',\r\n\t\tbackgroundColor : '#115065'\r\n\t}\r\n]);"}],"tableComponent":[{"name":"tableComponentLauncher","content":"const {App} = require('formantjs');\r\nconst buildData = require('src/App/helpers/tableComponentDataBuilder');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst TableComponent = App.componentTypes.ExtensibleTable;\r\n\t\t\t\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\tconst myTable = new TableComponent();\r\n\t\t\tmyTable.setColumnsCount(2, columnNames);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Contrary to the table101 implementation,\r\n\t\t\t * buildData() only needs to return a array of string-arrays.\r\n\t\t\t * Internally, the ExtensibleTable component will convert it to\r\n\t\t\t * an array of objects of type ReactiveDataset.Item.\r\n\t\t\t * \r\n\t\t\t * (in the case of the ExtensibleTable, the ReactiveDataset.Item\r\n\t\t\t * has the following form :\r\n\t\t\t *\t\t{rowContentAsArray : [string, string]}\r\n\t\t\t * (a string for each declared column)\r\n\t\t\t */\r\n\t\t\tconst tableData = buildData(10);\r\n\t\t\tmyTable.acquireData(tableData);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"},{"name":"tableComponentDataBuilder","content":"const dummyData = {\r\n    adjectives : [\"pretty\", \"large\", \"big\", \"small\", \"tall\", \"short\", \"long\", \"handsome\", \"plain\", \"quaint\", \"clean\", \"elegant\", \"easy\", \"angry\", \"crazy\", \"helpful\", \"mushy\", \"odd\", \"unsightly\", \"adorable\", \"important\", \"inexpensive\", \"cheap\", \"expensive\", \"fancy\"],\r\n    colours : [\"red\", \"yellow\", \"blue\", \"green\", \"pink\", \"brown\", \"purple\", \"brown\", \"white\", \"black\", \"orange\"],\r\n    nouns : [\"table\", \"chair\", \"house\", \"bbq\", \"desk\", \"car\", \"pony\", \"cookie\", \"sandwich\", \"burger\", \"pizza\", \"mouse\", \"keyboard\"]\r\n};\r\n\r\nfunction buildData(count) {\r\n    const data = [];\r\n    let itemStr = '';\r\n    for (let i = 0; i < count; i++) {\r\n\t\titemStr = dummyData.adjectives[randomOn(dummyData.adjectives.length)] + ' '\r\n\t\t\t\t+ dummyData.colours[randomOn(dummyData.colours.length)] + ' '\r\n\t\t\t\t+ dummyData.nouns[randomOn(dummyData.nouns.length)];\r\n\t\t\r\n        data.push([i.toString(), itemStr]);\r\n    }\r\n    return data;\r\n}\r\nfunction randomOn(max) {\r\n    return (Math.random() * max) | 0;\r\n}\r\n\t\r\nmodule.exports = buildData;\r\n"}],"behaviorsTableSelect":[{"name":"behaviorsTableSelect","content":"const {App, TemplateFactory, ReactiveDataset} = require('formantjs');\r\n\r\nconst buildData = require('src/App/helpers/table101DataBuilder');\r\nconst localStylesheet = require('src/App/codeSamples/table101StyleDef');\r\n\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\t/*\r\n\t\t\t * Add style to illustrate the behavior\r\n\t\t\t */\r\n\t\t\tlocalStylesheet.setProp('tbody tr', 'cursor', 'pointer');\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Build the schematic definition of the table\r\n\t\t\t */\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\t\r\n\t\t\tconst rowDef = TemplateFactory.createDef({\r\n\t\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\t\ttype : 'ClickableComponent',\r\n\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\tsection : 1,\r\n\t\t\t\t\t\tstates : [\r\n\t\t\t\t\t\t\t{id : undefined},\r\n\t\t\t\t\t\t\t{selected : undefined}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t\t{label : undefined}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\tfrom : 'selected',\r\n\t\t\t\t\t\t\t\tto : 'selected',\r\n\t\t\t\t\t\t\t\tmap : function(componentKey) {return componentKey === this._key ? 'selected' : null} \r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\tsubscribeOnSelf : [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\ton : 'clicked_ok',\r\n\t\t\t\t\t\t\t\tsubscribe : function(e) {this.trigger('update', {changeSelected : this._key})}\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t}),\r\n\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\t\t\tfrom : columnName,\r\n\t\t\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t\t)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tvar tableDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName : 'smart-table',\r\n\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t{selected : undefined}\r\n\t\t\t\t\t],\r\n\t\t\t\t\tsubscribeOnChild : [\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\ton : 'update',\r\n\t\t\t\t\t\t\tsubscribe : function(e) {\r\n\t\t\t\t\t\t\t\tthis.streams.selected.value = e.data.changeSelected;\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t],\r\n\t\t\t\t\tsWrapper : localStylesheet\r\n\t\t\t\t}),\r\n\t\t\t\tsubSections : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'thead'}),\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'tbody'})\r\n\t\t\t\t],\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createDef({\r\n\t\t\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\t\t\tsection : 0\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'th',\r\n\t\t\t\t\t\t\t\tattributes : [\r\n\t\t\t\t\t\t\t\t\t{textContent : columnName}\r\n\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t)\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciate the component\r\n\t\t\t */\r\n\t\t\tconst myTable = new App.componentTypes.CompoundComponent(tableDef);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Inject & Bind data reactively\r\n\t\t\t */\r\n\t\t\tconst rows = new ReactiveDataset(\r\n\t\t\t\tnull,\t\t\t\t\t\t// only special use cases\r\n\t\t\t\tmyTable,\t\t\t\t\t// the parent of the components which shall be instanciated\r\n\t\t\t\trowDef,\t\t\t\t\t\t// the template for the components which shall be instanciated\r\n\t\t\t\tcolumnNames\t\t\t\t\t// the schema of the dataset\r\n\t\t\t);\r\n\t\t\t\r\n\t\t\tconst tableContent = buildData(10, rows);\r\n\t\t\trows.pushApply(tableContent);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"}]}};
 },{}],5:[function(_dereq_,module,exports){
-const {App, TemplateFactory, ReactiveDataset} = _dereq_('formant');
+const {App, TemplateFactory, ReactiveDataset} = _dereq_('formantjs');
 
 const buildData = _dereq_('src/App/helpers/table101DataBuilder');
 const localStylesheet = _dereq_('src/App/codeSamples/table101StyleDef');
@@ -47326,8 +47330,8 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3,"src/App/codeSamples/table101StyleDef":15,"src/App/helpers/table101DataBuilder":17}],6:[function(_dereq_,module,exports){
-const {App, TemplateFactory} = _dereq_('formant');
+},{"formantjs":3,"src/App/codeSamples/table101StyleDef":15,"src/App/helpers/table101DataBuilder":17}],6:[function(_dereq_,module,exports){
+const {App, TemplateFactory} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
 	return {
@@ -47376,8 +47380,8 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3}],7:[function(_dereq_,module,exports){
-const {App, TemplateFactory} = _dereq_('formant');
+},{"formantjs":3}],7:[function(_dereq_,module,exports){
+const {App, TemplateFactory} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
 	return {
@@ -47424,8 +47428,8 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3}],8:[function(_dereq_,module,exports){
-const {App, TemplateFactory} = _dereq_('formant');
+},{"formantjs":3}],8:[function(_dereq_,module,exports){
+const {App, TemplateFactory} = _dereq_('formantjs');
 //const ReactiveDataset = require('src/core/ReactiveDataset');
 //const graphQLCaseStudyTabSlotDef = require('src/codeSamples/graphQLCaseStudyTabDef');
 
@@ -47489,8 +47493,8 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3}],9:[function(_dereq_,module,exports){
-const {App, TemplateFactory} = _dereq_('formant');
+},{"formantjs":3}],9:[function(_dereq_,module,exports){
+const {App, TemplateFactory} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
 	return {
@@ -47519,8 +47523,8 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3}],10:[function(_dereq_,module,exports){
-const {App, TemplateFactory} = _dereq_('formant');
+},{"formantjs":3}],10:[function(_dereq_,module,exports){
+const {App, TemplateFactory} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
 	return {
@@ -47538,8 +47542,8 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3}],11:[function(_dereq_,module,exports){
-const {App, TemplateFactory} = _dereq_('formant');
+},{"formantjs":3}],11:[function(_dereq_,module,exports){
+const {App, TemplateFactory} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
 	return {
@@ -47571,8 +47575,8 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3}],12:[function(_dereq_,module,exports){
-const {App} = _dereq_('formant');
+},{"formantjs":3}],12:[function(_dereq_,module,exports){
+const {App} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
 	return {
@@ -47609,8 +47613,8 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3}],13:[function(_dereq_,module,exports){
-const {App, TemplateFactory, CreateStyle} = _dereq_('formant');
+},{"formantjs":3}],13:[function(_dereq_,module,exports){
+const {App, TemplateFactory, CreateStyle} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
 	return {
@@ -47641,8 +47645,8 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3}],14:[function(_dereq_,module,exports){
-const {App, TemplateFactory, ReactiveDataset} = _dereq_('formant');
+},{"formantjs":3}],14:[function(_dereq_,module,exports){
+const {App, TemplateFactory, ReactiveDataset} = _dereq_('formantjs');
 
 const buildData = _dereq_('src/App/helpers/table101DataBuilder');
 const localStylesheet = _dereq_('src/App/codeSamples/table101StyleDef');
@@ -47764,11 +47768,11 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3,"src/App/codeSamples/table101StyleDef":15,"src/App/helpers/table101DataBuilder":17}],15:[function(_dereq_,module,exports){
+},{"formantjs":3,"src/App/codeSamples/table101StyleDef":15,"src/App/helpers/table101DataBuilder":17}],15:[function(_dereq_,module,exports){
 /*
  * Local Stylesheet for a table
  */
-const {CreateStyle} = _dereq_('formant');
+const {CreateStyle} = _dereq_('formantjs');
 
 module.exports = CreateStyle([
 	{
@@ -47810,8 +47814,8 @@ module.exports = CreateStyle([
 		backgroundColor : '#115065'
 	}
 ]);
-},{"formant":3}],16:[function(_dereq_,module,exports){
-const {App} = _dereq_('formant');
+},{"formantjs":3}],16:[function(_dereq_,module,exports){
+const {App} = _dereq_('formantjs');
 const buildData = _dereq_('src/App/helpers/tableComponentDataBuilder');
 
 module.exports = function(parentView) {
@@ -47841,7 +47845,7 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formant":3,"src/App/helpers/tableComponentDataBuilder":18}],17:[function(_dereq_,module,exports){
+},{"formantjs":3,"src/App/helpers/tableComponentDataBuilder":18}],17:[function(_dereq_,module,exports){
 const dummyData = {
 	adjectives : ["pretty", "large", "big", "small", "tall", "short", "long", "handsome", "plain", "quaint", "clean", "elegant", "easy", "angry", "crazy", "helpful", "mushy", "odd", "unsightly", "adorable", "important", "inexpensive", "cheap", "expensive", "fancy"],
 	colours : ["red", "yellow", "blue", "green", "pink", "brown", "purple", "brown", "white", "black", "orange"],
@@ -47895,7 +47899,7 @@ function randomOn(max) {
 module.exports = buildData;
 
 },{}],19:[function(_dereq_,module,exports){
-const {App, TemplateFactory, CoreTypes, validators} = _dereq_('formant');
+const {App, TemplateFactory, CoreTypes, validators} = _dereq_('formantjs');
 const SourceInjectionUtility = App.componentTypes.SourceInjectionUtility;
 const sourceCodeIndex = _dereq_('cache/stringifiedSources').sourcesAsStringArrays;
 const SourceCodeViewCleanerRouter = App.componentTypes.SourceCodeViewCleanerRouter;
@@ -47948,7 +47952,7 @@ module.exports = function(parentView) {
 		componentView : CoreTypes
 	}
 };
-},{"cache/stringifiedSources":4,"formant":3,"src/App/codeSamples/behaviorsTableSelect":5,"src/App/codeSamples/customReactiveListLauncher":6,"src/App/codeSamples/form101Launcher":7,"src/App/codeSamples/graphQLCaseStudyLauncher":8,"src/App/codeSamples/list101Launcher":9,"src/App/codeSamples/minimalHelloWorldLauncher":10,"src/App/codeSamples/reactiveHelloWorldLauncher":11,"src/App/codeSamples/reactiveListComponentLauncher":12,"src/App/codeSamples/stylingBasicsLauncher":13,"src/App/codeSamples/table101Launcher":14,"src/App/codeSamples/tableComponentLauncher":16,"src/App/templates/DocumentationAppMainTabPanelDef":20}],20:[function(_dereq_,module,exports){
+},{"cache/stringifiedSources":4,"formantjs":3,"src/App/codeSamples/behaviorsTableSelect":5,"src/App/codeSamples/customReactiveListLauncher":6,"src/App/codeSamples/form101Launcher":7,"src/App/codeSamples/graphQLCaseStudyLauncher":8,"src/App/codeSamples/list101Launcher":9,"src/App/codeSamples/minimalHelloWorldLauncher":10,"src/App/codeSamples/reactiveHelloWorldLauncher":11,"src/App/codeSamples/reactiveListComponentLauncher":12,"src/App/codeSamples/stylingBasicsLauncher":13,"src/App/codeSamples/table101Launcher":14,"src/App/codeSamples/tableComponentLauncher":16,"src/App/templates/DocumentationAppMainTabPanelDef":20}],20:[function(_dereq_,module,exports){
 /**
  * definition helper
  */
@@ -47989,7 +47993,7 @@ defForStyle.lists[0].getHostDef().template.getHostDef().sOverride = [
  
  module.exports = defForStyle;
 },{"src/UI/categories/tabs/TabPanel/componentDefs/TabPanelHostDef":2}],21:[function(_dereq_,module,exports){
-const {appConstants, App} = _dereq_('formant');
+const {appConstants, App} = _dereq_('formantjs');
 
 App.data.stringifiedSources = _dereq_('cache/stringifiedSources').sourcesAsStringArrays;
 (function () {
@@ -47999,7 +48003,7 @@ App.data.stringifiedSources = _dereq_('cache/stringifiedSources').sourcesAsStrin
 	
 	this.DocumentationAppLauncher = _dereq_('src/App/launcher/DocumentationAppLauncher');
 }).call(window);
-},{"cache/stringifiedSources":4,"formant":3,"src/App/launcher/DocumentationAppLauncher":19}]},{},[21])
+},{"cache/stringifiedSources":4,"formantjs":3,"src/App/launcher/DocumentationAppLauncher":19}]},{},[21])
 //# sourceMappingURL=DocumentationApp.js.map
 
 // Get compatibility with node.js and standalone engines

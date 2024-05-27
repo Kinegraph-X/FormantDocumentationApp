@@ -1,4 +1,4 @@
-const {App} = require('formant');
+const {App} = require('formantjs');
 const buildData = require('src/App/helpers/tableComponentDataBuilder');
 
 module.exports = function(parentView) {

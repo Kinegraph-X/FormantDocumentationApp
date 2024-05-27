@@ -1,4 +1,4 @@
-const {App, TemplateFactory} = require('formant');
+const {App, TemplateFactory} = require('formantjs');
 
 module.exports = function(parentView) {
 	return {

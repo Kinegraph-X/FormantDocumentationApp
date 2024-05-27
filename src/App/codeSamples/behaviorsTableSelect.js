@@ -1,4 +1,4 @@
-const {App, TemplateFactory, ReactiveDataset} = require('formant');
+const {App, TemplateFactory, ReactiveDataset} = require('formantjs');
 
 const buildData = require('src/App/helpers/table101DataBuilder');
 const localStylesheet = require('src/App/codeSamples/table101StyleDef');

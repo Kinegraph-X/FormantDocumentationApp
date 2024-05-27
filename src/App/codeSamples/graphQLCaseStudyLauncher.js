@@ -1,4 +1,4 @@
-const {App, TemplateFactory} = require('formant');
+const {App, TemplateFactory} = require('formantjs');
 //const ReactiveDataset = require('src/core/ReactiveDataset');
 //const graphQLCaseStudyTabSlotDef = require('src/codeSamples/graphQLCaseStudyTabDef');
 
