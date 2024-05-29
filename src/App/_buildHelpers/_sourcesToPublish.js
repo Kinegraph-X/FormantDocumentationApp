@@ -8,5 +8,6 @@ module.exports = [
 	'customReactiveList',
 	'table101',
 	'tableComponent',
-	'behaviorsTableSelect'
+	'behaviorsTableSelect',
+	'gradientGenerator'
 ];

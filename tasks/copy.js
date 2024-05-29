@@ -26,6 +26,19 @@ module.exports = function (grunt, options) {
 					filter: 'isFile'
 				}
 			]
+		},
+		devServer: {
+			files : [
+				{
+					expand: true,
+					cwd: '<%=distPath%>',
+					src: [
+						'<%=currentProject%>.js', '<%=currentProject%>.js.map'
+						],
+					dest: 'test_servers/_documentation/_enhanced/plugins/DocumentationApp/js',
+					filter: 'isFile'
+				}
+			]
 		}
 	};
 }

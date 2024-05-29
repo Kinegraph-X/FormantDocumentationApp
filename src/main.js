@@ -1,4 +1,4 @@
-const {appConstants, App} = require('formantjs');
+const {appConstants, App, Components} = require('formantjs');
 
 App.data.stringifiedSources = require('cache/stringifiedSources').sourcesAsStringArrays;
 (function () {
@@ -7,4 +7,5 @@ App.data.stringifiedSources = require('cache/stringifiedSources').sourcesAsStrin
 	});
 	
 	this.DocumentationAppLauncher = require('src/App/launcher/DocumentationAppLauncher');
+	
 }).call(window);

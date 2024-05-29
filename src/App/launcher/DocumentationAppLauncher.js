@@ -14,7 +14,8 @@ const codeSamples = {
 	customReactiveList : require('src/App/codeSamples/customReactiveListLauncher'),
 	table101 : require('src/App/codeSamples/table101Launcher'),
 	tableComponent : require('src/App/codeSamples/tableComponentLauncher'),
-	behaviorsTableSelect : require('src/App/codeSamples/behaviorsTableSelect')
+	behaviorsTableSelect : require('src/App/codeSamples/behaviorsTableSelect'),
+	gradientGenerator : require('src/App/codeSamples/gradientGeneratorLauncher')
 };
 
 /**
@@ -51,3 +52,5 @@ module.exports = function(parentView) {
 		componentView : CoreTypes
 	}
 };
+
+//module.exports = codeSamples.gradientGeneratorLauncher;

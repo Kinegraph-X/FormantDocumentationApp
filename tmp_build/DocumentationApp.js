@@ -752,14 +752,13 @@ module.exports = SpecialDependencyInjector;
 //		window = global;
 //}
 
-// TODO : Should not polute the namespace of this function : think seriously of removing the affectation to vars, as we only need to "execute" the require
 
 if (typeof Object.getOwnPropertyDescriptor(String.prototype, 'escapeRegExp') === 'undefined') { 
-	var Str = _dereq_('src/extendedNative/string');
-	var Arr = _dereq_('src/extendedNative/array');
-	var Bool = _dereq_('src/extendedNative/boolean');
-	var Obj = _dereq_('src/extendedNative/object');
-	var Regex = _dereq_('src/extendedNative/regexp');
+	_dereq_('src/extendedNative/string');
+	_dereq_('src/extendedNative/array');
+	_dereq_('src/extendedNative/boolean');
+	_dereq_('src/extendedNative/object');
+	_dereq_('src/extendedNative/regexp');
 }
 var Validate = _dereq_('src/integrated_libs_&_forks/Validate');
 var Hamster = _dereq_('src/integrated_libs_&_forks/Hamster');
@@ -2100,6 +2099,30 @@ var RootViewComponentDef = function(uniqueID, options, model) {
 		nameInCache : 'RootViewComponentPageStyles'
 	}
 
+	var headerStyles = [
+
+	{
+		"selector": ":host",
+		"display": "flex",
+		"width": "100%",
+		"flex": "1 1 0",
+		"flexFlow": "row",
+		"boxSizing": "border-box",
+		"background": "0",
+		"border": "0",
+		"boxShadow": "0",
+		"margin": "0",
+		"outline": "0",
+		"padding": "0",
+		"verticalAlign": "baseline"
+	}
+
+	];
+	var headerStylesUseCache = {
+		use : false,
+		nameInCache : 'RootViewComponentHeaderStyles'
+	}
+
 	var hostStyles = [
 
 	{
@@ -2134,30 +2157,6 @@ var RootViewComponentDef = function(uniqueID, options, model) {
 	var hostStylesUseCache = {
 		use : false,
 		nameInCache : 'RootViewComponentHostStyles'
-	}
-
-	var headerStyles = [
-
-	{
-		"selector": ":host",
-		"display": "flex",
-		"width": "100%",
-		"flex": "1 1 0",
-		"flexFlow": "row",
-		"boxSizing": "border-box",
-		"background": "0",
-		"border": "0",
-		"boxShadow": "0",
-		"margin": "0",
-		"outline": "0",
-		"padding": "0",
-		"verticalAlign": "baseline"
-	}
-
-	];
-	var headerStylesUseCache = {
-		use : false,
-		nameInCache : 'RootViewComponentHeaderStyles'
 	}
 	
 
@@ -3097,7 +3096,7 @@ Ignition.prototype = {};
 Ignition.prototype.objectType = 'Ignition'; 
 
 Ignition.prototype.decorateComponentsThroughDefinitionsCache = function(listDef) {
-	
+//	console.log('decorateComponentsThroughDefinitionsCache');
 	// instanciate DOM objects through cloning : DOM attributes are always static
 	// 					=> iterate on the "views" register
 	if (typeof document !== 'undefined' && typeof document.ownerDocument !== 'undefined')
@@ -3134,18 +3133,19 @@ Ignition.prototype.instanciateDOM = function() {
 		cloneMother,
 		effectiveViewAPI,
 		masterNode;
-
+	
 	views.forEach(function(view, key) {
 		attributes = attributesCache[view._defUID];
 		effectiveViewAPI = view.currentViewAPI;
 		
+//		console.log(view);
 		if (nodes[view._defUID].cloneMother) {
 			view.callCurrentViewAPI('setMasterNode', nodes[view._defUID].cloneMother.cloneNode(true));
 			Object.assign(view.callCurrentViewAPI('getMasterNode'), elementDecorator_OffsetProp);
 		}
 		else {
 			nodes[view._defUID].cloneMother = ElementCreator.createElement(nodes[view._defUID].nodeName, nodes[view._defUID].isCustomElem, Registries.caches.states.cache[view._defUID]);
-
+			
 			alreadyCloned = false;
 			cloneMother = nodes[view._defUID].cloneMother;
 			attributes.forEach(function(attrObject) {
@@ -3527,7 +3527,7 @@ DelayedDecoration.prototype.objectType = 'DelayedDecoration';
  * @param {HierarchicalDefinition} componentListHostDef : an optional definition for a list of components to be instanciaded /!\ RESEVERD for the Dataset Type
  */
 const renderDOM = function(containerSelector, component, componentListHostDef) {
-	const app = new Ignition()
+	const app = new Ignition();
 	app.decorateComponentsThroughDefinitionsCache(componentListHostDef);
 	
 	if (componentListHostDef)
@@ -3535,7 +3535,7 @@ const renderDOM = function(containerSelector, component, componentListHostDef) {
 	
 	if (typeof containerSelector !== 'string')
 		return component;
-
+	
 	document.querySelector(containerSelector).appendChild(component.view.getMasterNode());
 }
 
@@ -4160,20 +4160,6 @@ HierarchicalObject.prototype.overrideParent = function (Idx) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * @constructor ExtensibleObject
  */
@@ -4374,16 +4360,6 @@ ExtensibleObject.prototype.onExtend = function(namespace) {
 	if (!(namespace.prototype.hasOwnProperty('_asyncRegisterTasks')))
 		namespace.prototype._asyncRegisterTasks = [];
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -4633,6 +4609,12 @@ var ComponentWithView = function(definition, parentView, parent, isChildOfRoot) 
 		definition = TypeManager.mockDef();
 //		definition.getHostDef().nodeName = 'dummy';
 	}
+	else if (!definition) {
+		console.warn('A Component received an undefined definition, maybe you wanted to explicitely pass a null definition ? '
+			+ 'The type is ' + Object.getPrototypeOf(this).objectType + ' '
+			+ '(this check is here to enforce good practices)');
+		return;
+	}
 	
 //	console.log(definition);
 	ComponentWithObservables.call(this, definition, parentView, parent);
@@ -4679,8 +4661,8 @@ ComponentWithView.prototype.instanciateView = function(definition, parentView, p
 ComponentWithView.prototype.setContentFromValueOnView = function(value) {
 	if (typeof value !== 'string' && isNaN(parseInt(value)))
 		return;
-	if (this.view.getWrappingNode().childNodes.length)
-		console.warn('setContentFromValueOnView : replacing the content of a node that already has content. Value is :', value)
+//	if (this.view.getWrappingNode().childNodes.length)
+//		console.warn('setContentFromValueOnView : replacing the content of a node that already has content. Value is :', value)
 	this.view.value = value.toString();		// this.view.value is a "special" setter: it sets textContent OR value, based on the effective node
 };
 
@@ -4688,8 +4670,8 @@ ComponentWithView.prototype.setContentFromValueOnView = function(value) {
  * @abstract
  */
 ComponentWithView.prototype.setContentFromValueOnMemberView = function(value, memberViewIdx) {
-	if (this.view.subViewsHolder.memberAt(memberViewIdx).getWrappingNode().childNodes.length)
-		console.warn('setContentFromValueOnView : replacing the content of a node that already has content. Value is :', value)
+//	if (this.view.subViewsHolder.memberAt(memberViewIdx).getWrappingNode().childNodes.length)
+//		console.warn('setContentFromValueOnView : replacing the content of a node that already has content. Value is :', value)
 	this.view.subViewsHolder.memberAt(memberViewIdx).setContentNoFail(value.toString());		// this.view.value is a "special" setter: it sets textContent OR value, based on the effective node
 };
 
@@ -5599,6 +5581,8 @@ const CompoundComponent = function(definition, parentView, parent, isChildOfRoot
 	this._firstListUIDSeen = null;
 	var shouldExtend = false;
 	
+	
+	
 	if (!definition.getGroupHostDef())
 		console.error('Definition given to CompoundComponent isn\'t a nested HierachicalDefinition.', definition, 'Type is:', definition.getHostDef().type, this);
 		
@@ -5649,7 +5633,7 @@ const CompoundComponent = function(definition, parentView, parent, isChildOfRoot
 	if (shouldExtend)
 		this.extendDefinition(definition);
 	
-	var defaultDef = this.createDefaultDef();
+	var defaultDef = this.createDefaultDef(definition.getHostDef());
 	
 	// When instanciating a CompoundComponent directly from its ctor,  there is no defaultDef : don't try to merge
 	if (defaultDef) {
@@ -5712,6 +5696,7 @@ CompoundComponent.prototype.instanciateSubSections = function(definition) {
 
 CompoundComponent.prototype.instanciateMembers = function(definition) {
 //	console.log(definition.members);
+//	console.log(this.view);
 	var type;
 	definition.members.forEach(function(memberDef) {
 		if (!memberDef.getHostDef && (memberDef.nodeName || memberDef.type)) {
@@ -5723,7 +5708,6 @@ CompoundComponent.prototype.instanciateMembers = function(definition) {
 		//			console.log(type, type in Components, Components);
 //		console.log(type);
 		if (type in Components && type !== 'CompoundComponent') {
-//			console.log(definition);
 			new Components[type](memberDef, this.view, this);
 		}
 		else if (memberDef.getGroupHostDef()) {
@@ -6615,7 +6599,12 @@ Components.CompositorComponent.prototype.acquireCompositor = function(inheriting
 
 Components.CompositorComponent.createAppLevelExtendedComponent = function() {
 	var extension2ndPass = {};
+//	console.error(typeof Components.GradientGenerator);
 	for (var componentType in Components) {
+		if (Components[componentType].hasOwnProperty('dependancyInjectionDone'))
+			continue;
+		
+//		console.log(componentType);
 //		console.log(Components[componentType].prototype.hasOwnProperty('extendsCore'), componentType, Components[componentType]);
 
 		// An automatically included component may not really be a component : we have a "special" category that we also include
@@ -6624,12 +6613,19 @@ Components.CompositorComponent.createAppLevelExtendedComponent = function() {
 		if (Components[componentType].prototype.hasOwnProperty('extendsCore')) {
 //			console.log(Components[componentType]);
 			Components.CompositorComponent.prototype.acquireCompositor(Components[componentType], Components[componentType].prototype.extendsCore);
+			Components[componentType].dependancyInjectionDone = true;
 		}
-		else if (Components[componentType].prototype.hasOwnProperty('extends'))
+		else if (Components[componentType].prototype.hasOwnProperty('extends')) {
 			extension2ndPass[componentType] = Components[componentType];
+		}
+			
+		
 	}
 	for (var componentType in extension2ndPass) {
+		if (Components[componentType].hasOwnProperty('dependancyInjectionDone'))
+			continue;
 		Components.CompositorComponent.prototype.extendFromCompositor(Components[componentType], Components[Components[componentType].prototype.extends]);
+		Components[componentType].dependancyInjectionDone = true;
 	}
 }
 
@@ -8503,6 +8499,7 @@ var ComponentView = function(definition, parentView, parent, isChildOfRoot) {
 		return;
 	}
 	else if (!(parentView instanceof ComponentView) && def.nodeName !== 'app-root') {
+//		console.log(parentView, ComponentView);
 		console.warn('no parentView given to a componentView : nodeName is', def.nodeName, '& type is', def.type);
 	}
 		
@@ -11902,7 +11899,9 @@ Object.assign(exportedObjects, {
 	propsAreArray : propsAreArray,									// Array
 	reactivityQueries : reactivityQueries,							// Array
 	eventQueries : eventQueries,									// Array
-	propsArePrimitives : propsArePrimitives							// Array
+	propsArePrimitives : propsArePrimitives,						// Array
+	HierarchicalTemplate : HierarchicalComponentDefModel,
+	ViewTemplate : SingleLevelComponentDefModel
 });
 
 
@@ -17882,6 +17881,18 @@ CSSPropertyBuffer.prototype.functionToCanonical = function(valueAsParsed) {
 			value.repr += '")';
 			return value;
 		}
+		else if (valueAsParsed.name === 'translate' || valueAsParsed.name === 'rotate' || valueAsParsed.name === 'scale') {
+			value = new (LocalTokenFromParserFactory(null, 'TRANSFORM'))();
+			value.type = valueAsParsed.name;
+			value.repr = valueAsParsed.name + '(';
+			valueAsParsed.value.forEach(function(val, key) {
+				value.repr += val.repr;
+				if (key < valueAsParsed.value.length - 1)
+					value.repr += ', ';
+			});
+			value.repr += ')';
+			return value;
+		}
 		
 		console.warn('CSSPropertyBuffer->functionToCanonical: unsupported function given (' + valueAsParsed.name + ').');
 		return new (LocalTokenFromParserFactory(null, 'UNDEFINED'))();
@@ -18554,7 +18565,9 @@ SplittedCSSPropertyDescriptors.boxModelAttributes = {
 	borderStartStartRadius : CSSPropertyDescriptorFactory('borderStartStartRadius', '', false, [], false, false),
 	borderEndStartRadius : CSSPropertyDescriptorFactory('borderEndStartRadius', '', false, [], false, false),
 	borderEndEndRadius : CSSPropertyDescriptorFactory('borderEndEndRadius', '', false, [], false, false),
-	borderStartEndRadius : CSSPropertyDescriptorFactory('borderStartEndRadius', '', false, [], false)
+	borderStartEndRadius : CSSPropertyDescriptorFactory('borderStartEndRadius', '', false, [], false),
+	
+	transform : CSSPropertyDescriptorFactory('transform', '', false, [], false)
 }
 
 SplittedCSSPropertyDescriptors.strictlyLocalAttributes = {
@@ -21119,6 +21132,10 @@ const tabPanelDef = function(uniqueID, options, model) {
 		"cursor": "pointer"
 	},
 	{
+		"selector": ":host",
+		"backgroundColor": "#282828"
+	},
+	{
 		"selector": ":host tab-header[highlighted]",
 		"backgroundColor": "#555"
 	}
@@ -21219,11 +21236,11 @@ for (let type in componentLib) {
 for (let type in validators) {
 	formantCore.validators[type] = _dereq_(validators[type]);
 }
+formantCore.App.localComponentTypes = {};
 const dependancyInjector = _dereq_('src/secondaryAppLauncher/dependancyInjector');
 
 module.exports = formantCore;
 },{"formantCore":2,"src/_buildTools/_UIpackages":38,"src/secondaryAppLauncher/dependancyInjector":39}],2:[function(_dereq_,module,exports){
-(function (global){(function (){
 "use strict";
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.formantCore = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof _dereq_&&_dereq_;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof _dereq_&&_dereq_,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_dereq_,module,exports){
 "use strict";
@@ -22014,7 +22031,7 @@ var classConstructor = (function() {
 	
 //	console.log(knownIDs);
 	var launch = function(customOptions) {
-		console.log('appLauncher');
+		
 		debugMode = window.location && window.location.href.match(/[\?&]debug=(.+)&?/)
 		if (debugMode && debugMode[0])
 			debugMode = debugMode[0];
@@ -22422,41 +22439,6 @@ var ComponentPickingInputDef = function(uniqueID, options, model) {
 	// Some CSS stuff (styles are directly injected in the main def below)
 	/**@CSSifySlots placeholder */
 
-	var hostStyles = [
-
-	{
-		"selector": ":host, div",
-		"boxSizing": "border-box",
-		"background": "none",
-		"border": "0",
-		"boxShadow": "none",
-		"margin": "0",
-		"outline": "0",
-		"padding": "0",
-		"verticalAlign": "baseline"
-	},
-	{
-		"selector": ":host",
-		"display": "flex",
-		"flex": "1 1 0",
-		"alignItems": "center",
-		"justifyContent": "space-between",
-		"border": "1px solid #383838",
-		"margin": "2px",
-		"padding": "3px",
-		"borderRadius": "2px"
-	},
-	{
-		"selector": "label",
-		"padding": "2px 7px"
-	}
-
-	];
-	var hostStylesUseCache = {
-		use : false,
-		nameInCache : 'ComponentPickingInputHostStyles'
-	}
-
 	var buttonStyles = [
 
 	{
@@ -22491,6 +22473,41 @@ var ComponentPickingInputDef = function(uniqueID, options, model) {
 	var buttonStylesUseCache = {
 		use : false,
 		nameInCache : 'ComponentPickingInputButtonStyles'
+	}
+
+	var hostStyles = [
+
+	{
+		"selector": ":host, div",
+		"boxSizing": "border-box",
+		"background": "none",
+		"border": "0",
+		"boxShadow": "none",
+		"margin": "0",
+		"outline": "0",
+		"padding": "0",
+		"verticalAlign": "baseline"
+	},
+	{
+		"selector": ":host",
+		"display": "flex",
+		"flex": "1 1 0",
+		"alignItems": "center",
+		"justifyContent": "space-between",
+		"border": "1px solid #383838",
+		"margin": "2px",
+		"padding": "3px",
+		"borderRadius": "2px"
+	},
+	{
+		"selector": "label",
+		"padding": "2px 7px"
+	}
+
+	];
+	var hostStylesUseCache = {
+		use : false,
+		nameInCache : 'ComponentPickingInputHostStyles'
 	}
 	
 	
@@ -24321,7 +24338,7 @@ Ignition.prototype = {};
 Ignition.prototype.objectType = 'Ignition'; 
 
 Ignition.prototype.decorateComponentsThroughDefinitionsCache = function(listDef) {
-	
+//	console.log('decorateComponentsThroughDefinitionsCache');
 	// instanciate DOM objects through cloning : DOM attributes are always static
 	// 					=> iterate on the "views" register
 	if (typeof document !== 'undefined' && typeof document.ownerDocument !== 'undefined')
@@ -24358,18 +24375,19 @@ Ignition.prototype.instanciateDOM = function() {
 		cloneMother,
 		effectiveViewAPI,
 		masterNode;
-
+	
 	views.forEach(function(view, key) {
 		attributes = attributesCache[view._defUID];
 		effectiveViewAPI = view.currentViewAPI;
 		
+//		console.log(view);
 		if (nodes[view._defUID].cloneMother) {
 			view.callCurrentViewAPI('setMasterNode', nodes[view._defUID].cloneMother.cloneNode(true));
 			Object.assign(view.callCurrentViewAPI('getMasterNode'), elementDecorator_OffsetProp);
 		}
 		else {
 			nodes[view._defUID].cloneMother = ElementCreator.createElement(nodes[view._defUID].nodeName, nodes[view._defUID].isCustomElem, Registries.caches.states.cache[view._defUID]);
-
+			
 			alreadyCloned = false;
 			cloneMother = nodes[view._defUID].cloneMother;
 			attributes.forEach(function(attrObject) {
@@ -24751,7 +24769,7 @@ DelayedDecoration.prototype.objectType = 'DelayedDecoration';
  * @param {HierarchicalDefinition} componentListHostDef : an optional definition for a list of components to be instanciaded /!\ RESEVERD for the Dataset Type
  */
 const renderDOM = function(containerSelector, component, componentListHostDef) {
-	const app = new Ignition()
+	const app = new Ignition();
 	app.decorateComponentsThroughDefinitionsCache(componentListHostDef);
 	
 	if (componentListHostDef)
@@ -24759,7 +24777,7 @@ const renderDOM = function(containerSelector, component, componentListHostDef) {
 	
 	if (typeof containerSelector !== 'string')
 		return component;
-
+	
 	document.querySelector(containerSelector).appendChild(component.view.getMasterNode());
 }
 
@@ -25384,20 +25402,6 @@ HierarchicalObject.prototype.overrideParent = function (Idx) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * @constructor ExtensibleObject
  */
@@ -25598,16 +25602,6 @@ ExtensibleObject.prototype.onExtend = function(namespace) {
 	if (!(namespace.prototype.hasOwnProperty('_asyncRegisterTasks')))
 		namespace.prototype._asyncRegisterTasks = [];
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -25857,6 +25851,12 @@ var ComponentWithView = function(definition, parentView, parent, isChildOfRoot) 
 		definition = TypeManager.mockDef();
 //		definition.getHostDef().nodeName = 'dummy';
 	}
+	else if (!definition) {
+		console.warn('A Component received an undefined definition, maybe you wanted to explicitely pass a null definition ? '
+			+ 'The type is ' + Object.getPrototypeOf(this).objectType + ' '
+			+ '(this check is here to enforce good practices)');
+		return;
+	}
 	
 //	console.log(definition);
 	ComponentWithObservables.call(this, definition, parentView, parent);
@@ -25903,8 +25903,8 @@ ComponentWithView.prototype.instanciateView = function(definition, parentView, p
 ComponentWithView.prototype.setContentFromValueOnView = function(value) {
 	if (typeof value !== 'string' && isNaN(parseInt(value)))
 		return;
-	if (this.view.getWrappingNode().childNodes.length)
-		console.warn('setContentFromValueOnView : replacing the content of a node that already has content. Value is :', value)
+//	if (this.view.getWrappingNode().childNodes.length)
+//		console.warn('setContentFromValueOnView : replacing the content of a node that already has content. Value is :', value)
 	this.view.value = value.toString();		// this.view.value is a "special" setter: it sets textContent OR value, based on the effective node
 };
 
@@ -25912,8 +25912,8 @@ ComponentWithView.prototype.setContentFromValueOnView = function(value) {
  * @abstract
  */
 ComponentWithView.prototype.setContentFromValueOnMemberView = function(value, memberViewIdx) {
-	if (this.view.subViewsHolder.memberAt(memberViewIdx).getWrappingNode().childNodes.length)
-		console.warn('setContentFromValueOnView : replacing the content of a node that already has content. Value is :', value)
+//	if (this.view.subViewsHolder.memberAt(memberViewIdx).getWrappingNode().childNodes.length)
+//		console.warn('setContentFromValueOnView : replacing the content of a node that already has content. Value is :', value)
 	this.view.subViewsHolder.memberAt(memberViewIdx).setContentNoFail(value.toString());		// this.view.value is a "special" setter: it sets textContent OR value, based on the effective node
 };
 
@@ -26823,6 +26823,8 @@ const CompoundComponent = function(definition, parentView, parent, isChildOfRoot
 	this._firstListUIDSeen = null;
 	var shouldExtend = false;
 	
+	
+	
 	if (!definition.getGroupHostDef())
 		console.error('Definition given to CompoundComponent isn\'t a nested HierachicalDefinition.', definition, 'Type is:', definition.getHostDef().type, this);
 		
@@ -26873,7 +26875,7 @@ const CompoundComponent = function(definition, parentView, parent, isChildOfRoot
 	if (shouldExtend)
 		this.extendDefinition(definition);
 	
-	var defaultDef = this.createDefaultDef();
+	var defaultDef = this.createDefaultDef(definition.getHostDef());
 	
 	// When instanciating a CompoundComponent directly from its ctor,  there is no defaultDef : don't try to merge
 	if (defaultDef) {
@@ -26936,6 +26938,7 @@ CompoundComponent.prototype.instanciateSubSections = function(definition) {
 
 CompoundComponent.prototype.instanciateMembers = function(definition) {
 //	console.log(definition.members);
+//	console.log(this.view);
 	var type;
 	definition.members.forEach(function(memberDef) {
 		if (!memberDef.getHostDef && (memberDef.nodeName || memberDef.type)) {
@@ -26947,7 +26950,6 @@ CompoundComponent.prototype.instanciateMembers = function(definition) {
 		//			console.log(type, type in Components, Components);
 //		console.log(type);
 		if (type in Components && type !== 'CompoundComponent') {
-//			console.log(definition);
 			new Components[type](memberDef, this.view, this);
 		}
 		else if (memberDef.getGroupHostDef()) {
@@ -27839,7 +27841,12 @@ Components.CompositorComponent.prototype.acquireCompositor = function(inheriting
 
 Components.CompositorComponent.createAppLevelExtendedComponent = function() {
 	var extension2ndPass = {};
+//	console.error(typeof Components.GradientGenerator);
 	for (var componentType in Components) {
+		if (Components[componentType].hasOwnProperty('dependancyInjectionDone'))
+			continue;
+		
+//		console.log(componentType);
 //		console.log(Components[componentType].prototype.hasOwnProperty('extendsCore'), componentType, Components[componentType]);
 
 		// An automatically included component may not really be a component : we have a "special" category that we also include
@@ -27848,12 +27855,19 @@ Components.CompositorComponent.createAppLevelExtendedComponent = function() {
 		if (Components[componentType].prototype.hasOwnProperty('extendsCore')) {
 //			console.log(Components[componentType]);
 			Components.CompositorComponent.prototype.acquireCompositor(Components[componentType], Components[componentType].prototype.extendsCore);
+			Components[componentType].dependancyInjectionDone = true;
 		}
-		else if (Components[componentType].prototype.hasOwnProperty('extends'))
+		else if (Components[componentType].prototype.hasOwnProperty('extends')) {
 			extension2ndPass[componentType] = Components[componentType];
+		}
+			
+		
 	}
 	for (var componentType in extension2ndPass) {
+		if (Components[componentType].hasOwnProperty('dependancyInjectionDone'))
+			continue;
 		Components.CompositorComponent.prototype.extendFromCompositor(Components[componentType], Components[Components[componentType].prototype.extends]);
+		Components[componentType].dependancyInjectionDone = true;
 	}
 }
 
@@ -29727,6 +29741,7 @@ var ComponentView = function(definition, parentView, parent, isChildOfRoot) {
 		return;
 	}
 	else if (!(parentView instanceof ComponentView) && def.nodeName !== 'app-root') {
+//		console.log(parentView, ComponentView);
 		console.warn('no parentView given to a componentView : nodeName is', def.nodeName, '& type is', def.type);
 	}
 		
@@ -33126,7 +33141,9 @@ Object.assign(exportedObjects, {
 	propsAreArray : propsAreArray,									// Array
 	reactivityQueries : reactivityQueries,							// Array
 	eventQueries : eventQueries,									// Array
-	propsArePrimitives : propsArePrimitives							// Array
+	propsArePrimitives : propsArePrimitives,						// Array
+	HierarchicalTemplate : HierarchicalComponentDefModel,
+	ViewTemplate : SingleLevelComponentDefModel
 });
 
 
@@ -39106,6 +39123,18 @@ CSSPropertyBuffer.prototype.functionToCanonical = function(valueAsParsed) {
 			value.repr += '")';
 			return value;
 		}
+		else if (valueAsParsed.name === 'translate' || valueAsParsed.name === 'rotate' || valueAsParsed.name === 'scale') {
+			value = new (LocalTokenFromParserFactory(null, 'TRANSFORM'))();
+			value.type = valueAsParsed.name;
+			value.repr = valueAsParsed.name + '(';
+			valueAsParsed.value.forEach(function(val, key) {
+				value.repr += val.repr;
+				if (key < valueAsParsed.value.length - 1)
+					value.repr += ', ';
+			});
+			value.repr += ')';
+			return value;
+		}
 		
 		console.warn('CSSPropertyBuffer->functionToCanonical: unsupported function given (' + valueAsParsed.name + ').');
 		return new (LocalTokenFromParserFactory(null, 'UNDEFINED'))();
@@ -39778,7 +39807,9 @@ SplittedCSSPropertyDescriptors.boxModelAttributes = {
 	borderStartStartRadius : CSSPropertyDescriptorFactory('borderStartStartRadius', '', false, [], false, false),
 	borderEndStartRadius : CSSPropertyDescriptorFactory('borderEndStartRadius', '', false, [], false, false),
 	borderEndEndRadius : CSSPropertyDescriptorFactory('borderEndEndRadius', '', false, [], false, false),
-	borderStartEndRadius : CSSPropertyDescriptorFactory('borderStartEndRadius', '', false, [], false)
+	borderStartEndRadius : CSSPropertyDescriptorFactory('borderStartEndRadius', '', false, [], false),
+	
+	transform : CSSPropertyDescriptorFactory('transform', '', false, [], false)
 }
 
 SplittedCSSPropertyDescriptors.strictlyLocalAttributes = {
@@ -42306,16 +42337,14 @@ module.exports = StyleRule;
 });
 
 
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],3:[function(_dereq_,module,exports){
 "use strict";
-module.exports = (function() {return {"_configurationFiles":["_arias&glyphsDef.js"],"basics":["AbstractSlider","ClickableComponent","GenericTitledPanelComponent","InnerReactiveComponent","KeyValuePairComponent","MultisetAccordionComponent","SimpleText","SimpleTextReplace","SpecializedTypedListComponent","Tooltip","TypedListComponent","VisibleStateComponent"],"forms":["BoolSelector","CancelButton","CheckboxInput","EMailInput","Fieldset","FormComponent","LabelledButton","NamedButton","PasswordInput","SubmitButton","TextInput","TextareaInput","UsernameInput"],"specials":["SourceCodeViewCleanerRouter.js","SourceCodeViewRouter.js","SourceCodeViewRouterForExternalSources.js","SourceInjectionUtility.js"],"tables":["ExtensibleTable"],"tabs":["ComponentTabPanel","TabPanel"],"utilities":["SpinnerComponent"],"validators":["apipasswordInputDef.js","emailInputDef.js","filenameInputDef.js","mapcontentInputDef.js","passwordInputDef.js","usernameInputDef.js"]};})();
+module.exports = (function() {return {"_configurationFiles":["_arias&glyphsDef.js"],"_recentlyCreated":[],"basics":["AbstractSlider","ClickableComponent","GenericTitledPanelComponent","InnerReactiveComponent","KeyValuePairComponent","MultisetAccordionComponent","SimpleText","SimpleTextReplace","SpecializedTypedListComponent","Tooltip","TypedListComponent","VisibleStateComponent"],"forms":["BoolSelector","CancelButton","CheckboxInput","ColorPickerSliderInput","EMailInput","Fieldset","FormComponent","LabelledButton","NamedButton","PasswordInput","SubmitButton","TextInput","TextareaInput","UsernameInput"],"specials":["SourceCodeViewCleanerRouter.js","SourceCodeViewRouter.js","SourceCodeViewRouterForExternalSources.js","SourceInjectionUtility.js"],"tables":["ExtensibleTable"],"tabs":["ComponentTabPanel","TabPanel"],"trees":[],"utilities":["SpinnerComponent"],"validators":["apipasswordInputDef.js","emailInputDef.js","filenameInputDef.js","mapcontentInputDef.js","passwordInputDef.js","usernameInputDef.js"]};})();
 },{}],4:[function(_dereq_,module,exports){
 "use strict";
 module.exports = (function() {return ["apipasswordInputDef.js","emailInputDef.js","filenameInputDef.js","mapcontentInputDef.js","passwordInputDef.js","usernameInputDef.js"];})();
 },{}],5:[function(_dereq_,module,exports){
-module.exports = "\"use strict\";\n/* PrismJS 1.29.0\r\nhttps://prismjs.com/download.html#themes=prism-tomorrow&languages=markup+css+clike+javascript */\r\ncode[class*=language-],pre[class*=language-]{color:#ccc;background:0 0;font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:1em;margin:0;min-width: 1080px;width: 0px; overflow:auto}:not(pre)>code[class*=language-],pre[class*=language-]{background:#2d2d2d}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}.token.block-comment,.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#999}.token.punctuation{color:#ccc}.token.attr-name,.token.deleted,.token.namespace,.token.tag{color:#e2777a}.token.function-name{color:#6196cc}.token.boolean,.token.function,.token.number{color:#f08d49}.token.class-name,.token.constant,.token.property,.token.symbol{color:#f8c555}.token.atrule,.token.builtin,.token.important,.token.keyword,.token.selector{color:#cc99cd}.token.attr-value,.token.char,.token.regex,.token.string,.token.variable{color:#7ec699}.token.entity,.token.operator,.token.url{color:#67cdcc}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}.token.inserted{color:green}\r\n";
+module.exports = "\"use strict\";\n/* PrismJS 1.29.0\r\nhttps://prismjs.com/download.html#themes=prism-tomorrow&languages=markup+css+clike+javascript */\r\ncode[class*=language-],pre[class*=language-]{color:#ccc;background:0 0;font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:1em;margin:0;min-width: 1080px;width: 0px; overflow:auto}:not(pre)>code[class*=language-],pre[class*=language-]{background:#2d2d2d; color : #f6f7f9;}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}.token.block-comment,.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#999}.token.punctuation{color:#ccc}.token.attr-name,.token.deleted,.token.namespace,.token.tag{color:#e2777a}.token.function-name{color:#6196cc}.token.boolean,.token.function,.token.number{color:#f08d49}.token.class-name,.token.constant,.token.property,.token.symbol{color:#f8c555}.token.atrule,.token.builtin,.token.important,.token.keyword,.token.selector{color:#cc99cd}.token.attr-value,.token.char,.token.regex,.token.string,.token.variable{color:#7ec699}.token.entity,.token.operator,.token.url{color:#67cdcc}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}.token.inserted{color:green}\r\n";
 
 },{}],6:[function(_dereq_,module,exports){
 "use strict";
@@ -43954,6 +43983,10 @@ const tabPanelDef = function(uniqueID, options, model) {
 		"cursor": "pointer"
 	},
 	{
+		"selector": ":host",
+		"backgroundColor": "#282828"
+	},
+	{
 		"selector": ":host tab-header[highlighted]",
 		"backgroundColor": "#555"
 	}
@@ -44152,12 +44185,7 @@ const fs  = _dereq_('fs');
 
 module.exports = function(grunt, options) {
 	var categories = {
-//			none : [],
-//			minimal : ['minimal'],		// minimal bundling is broken, don't use until big fix
-//			special : ['special'],
-//			video : ['video'],
-//			std : ['minimal', 'boxes', 'panels', 'structs', 'titles'],
-			all : ['basics', 'forms', 'tables', 'tabs', 'trees', 'specials']
+		all : ['basics', 'forms', 'tables', 'tabs', 'trees', 'specials']
 	}
 	
 	options = options || {};
@@ -45709,7 +45737,168 @@ CheckboxInput.prototype.setValue = function(value) {
 
 
 module.exports = CheckboxInput;
-},{"formantCore":2,"src/UI/_interfaces/labelledCheckboxInputInterface":7,"src/UI/_interfaces/locallySavableInputInterface":11,"src/UI/categories/forms/CheckboxInput/componentDefs/checkboxInputDef":26}],"src/UI/categories/forms/EMailInput/EMailInput.js":[function(_dereq_,module,exports){
+},{"formantCore":2,"src/UI/_interfaces/labelledCheckboxInputInterface":7,"src/UI/_interfaces/locallySavableInputInterface":11,"src/UI/categories/forms/CheckboxInput/componentDefs/checkboxInputDef":26}],"src/UI/categories/forms/ColorPickerSliderInput/ColorPickerSliderInput.js":[function(_dereq_,module,exports){
+"use strict";
+/**
+ * @constructor ColorPickerSliderInput
+*/
+
+const {TemplateFactory, CreateStyle, Components} = _dereq_('formantCore');
+
+const ColorPickerSliderInput = function(definition, parentView) {
+	const def = definition || null;
+	Components.ComponentWithHooks.call(this, def, parentView);
+	this.objectType = 'ColorPickerSliderInput';
+	
+	this.absolutLeft = 0;
+	this.xMin = definition.options.xMin || 0;
+	this.xMax = definition.options.xMax || 400;
+	this.leftOffset = definition.options.initialLeft || 0;
+	this.initialClickOffset = 0;
+}
+ColorPickerSliderInput.prototype = Object.create(Components.ComponentWithHooks.prototype);
+ColorPickerSliderInput.prototype.objectType = 'ColorPickerSliderInput';
+
+ColorPickerSliderInput.prototype.createDefaultDef = function() {
+	return TemplateFactory.createDef({
+		host: TemplateFactory.createDef({
+			nodeName: 'triangle-colorpicker',
+			props : [
+				{
+					currentColor : undefined
+				}
+			],
+			reactOnSelf : [
+				{
+					from : 'currentColor',
+					cbOnly: true,
+					subscribe : function(value) {
+						this.view.subViewsHolder.memberViews[1].getMasterNode().value = value;
+						this.view.subViewsHolder.memberViews[2].getMasterNode().textContent = value;
+						this.trigger('update', {type : 'colorChanged', value : value, key : this._key}, true);
+					}
+				}
+			],
+			sWrapper: CreateStyle([
+				{
+					selector: ':host',
+					color : '#999',
+					position : 'absolute',
+					top : '0',
+					display : 'flex',
+					alignItems : 'center',
+					fontSize : '14px',
+					marginTop : '-22px'
+				},
+				{
+					selector: ':host div',
+					display : 'inline-block'
+				},
+				{
+					selector: ':host div:nth-child(4)',
+					display : 'inline-block',
+					marginTop : '-42px',
+					marginLeft : '4px'
+				},
+				{
+					selector: ':host div.arrow',
+					height: '0',
+					width: '0',
+					borderTop: '22px #DC2 solid',
+					borderRight: '8px #00000000 solid',
+					borderLeft: '8px #00000000 solid',
+					cursor : 'pointer'
+				},
+				{
+					selector: ':host input[type="color"]',
+					border: '1px #AAA solid',
+					padding: '0',
+					width: '16px',
+					height: '16px',
+					margin : '-42px 0px 0px -16px',
+					outline: 'none'
+				},
+				{
+					selector : ':host input[type="color"]::-webkit-color-swatch',
+					border : '0',
+					padding : '0'
+				},
+				{
+					selector : ':host input[type="color"]::-webkit-color-swatch-wrapper',
+					border : '0',
+					padding : '0'
+				}
+			])
+		}),
+		members: [
+			TemplateFactory.createDef({
+				nodeName: 'div',
+				attributes : [
+					{className : 'arrow'}
+				]
+			}),
+			TemplateFactory.createDef({
+				nodeName: 'input',
+				attributes: [
+					{ 'type': 'color' }
+				]
+			}),
+			/* displays the value of the color-picker */
+			TemplateFactory.createDef({
+				nodeName: 'div'
+			})
+		]
+	})
+}
+
+ColorPickerSliderInput.prototype._asyncRegisterTasks = [];
+ColorPickerSliderInput.prototype._asyncRegisterTasks.push(new TemplateFactory.TaskDefinitionModel({
+	type : 'lateBinding',
+	task : function() {
+//		this.view.subViewsHolder.memberViews[1].getMasterNode().value;
+//		this.view.subViewsHolder.memberViews[2].getMasterNode().textContent = this.view.subViewsHolder.memberViews[1].getMasterNode().value;
+		this.view.getMasterNode().style.left = this.absolutLeft + this.leftOffset + 'px';
+		this.view.getMasterNode().style.transform = 'translate(-8px)';
+	}
+}));
+
+ColorPickerSliderInput.prototype.registerClickEvents = function() {
+	this.view.subViewsHolder.memberViews[1].getMasterNode().addEventListener('input', function(e) {
+		this.view.subViewsHolder.memberViews[2].getMasterNode().textContent = e.target.value;
+		this.trigger('update', {type : 'colorChanged', value : e.target.value, key : this._key}, true);
+	}.bind(this));
+	
+	this.view.subViewsHolder.memberViews[0].getMasterNode().addEventListener('mousedown', function(e) {
+		e.target.setPointerCapture(e.pointerId);
+		this.initialClickOffset = e.clientX - this.absolutLeft - this.leftOffset;
+		this.handleDrag.call(this);
+	}.bind(this))
+}
+
+ColorPickerSliderInput.prototype.handleDrag = function() {
+	const dragHandler = this.dragHandler.bind(this);
+	document.body.addEventListener('mousemove', dragHandler);
+	document.body.addEventListener('mouseup', function(e) {
+		e.target.releasePointerCapture(e.pointerId);
+		this.leftOffset = parseInt(this.view.getMasterNode().style.left.slice(0, -2));
+		document.body.removeEventListener('mousemove', dragHandler);
+	}.bind(this));
+}
+
+ColorPickerSliderInput.prototype.dragHandler = function(e) {
+	const moveOffset = e.clientX - this.initialClickOffset - this.absolutLeft;
+	if (moveOffset < this.xMax && moveOffset > this.xMin) {
+		this.view.getMasterNode().style.left = this.absolutLeft + moveOffset + 'px';
+		this.trigger('update', {type : 'positionChanged', value : Math.round(moveOffset * 100 / this.xMax), key : this._key}, true);
+	}
+}
+
+
+
+
+
+module.exports = ColorPickerSliderInput;
+},{"formantCore":2}],"src/UI/categories/forms/EMailInput/EMailInput.js":[function(_dereq_,module,exports){
 "use strict";
 /**
  * @constructor EMailInput
@@ -47209,7 +47398,7 @@ module.exports = validator;
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{}],4:[function(_dereq_,module,exports){
-module.exports = {sourcesAsStringArrays : {"minimalHelloWorld":[{"name":"minimalHelloWorldLauncher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst template = TemplateFactory.createHostDef({\r\n\t\t\t\tnodeName: 'span',\r\n\t\t\t\tattributes: [\r\n\t\t\t\t\t{ textContent: 'Hello World!' }\r\n\t\t\t\t]\r\n\t\t\t});\r\n\r\n\t\t\tconst myHelloWorld = new App.componentTypes.ComponentWithView(template);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myHelloWorld);\r\n\t\t}\r\n\t}\r\n}"}],"reactiveHelloWorld":[{"name":"reactiveHelloWorldLauncher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst outerTemplate = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName: 'p',\r\n\t\t\t\t\tstates: [\r\n\t\t\t\t\t\t{ someState: 'Hello World!' }\r\n\t\t\t\t\t]\r\n\t\t\t\t}),\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\tnodeName: 'span',\r\n\t\t\t\t\t\treactOnParent: [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\tfrom: 'someState',\r\n\t\t\t\t\t\t\t\tto: 'text'\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\r\n\t\t\tconst myComponent = new App.componentTypes.CompoundComponent(outerTemplate);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myComponent);\r\n\t\t}\r\n\t}\r\n}"}],"stylingBasics":[{"name":"stylingBasicsLauncher","content":"const {App, TemplateFactory, CreateStyle} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst style = [\r\n\t\t\t    {\r\n\t\t\t        selector : ':host',\r\n\t\t\t        color : '#FF0000'    // red\r\n\t\t\t    }\r\n\t\t\t];\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Automagic: using a DOM custom-element shall scope the style on the shadowRoot.\r\n\t\t\t * Consequence: we can't use the DOM \"textContent\" attribute here.\r\n\t\t\t * => let's use the SimpleText Component we've discovered in the last chapter.\r\n\t\t\t*/\r\n\t\t\tconst template = TemplateFactory.createHostDef({\r\n\t\t\t    nodeName : 'my-span',\r\n\t\t\t    props : [\r\n\t\t\t        {text : 'Hello World!'}\r\n\t\t\t    ],\r\n\t\t\t    sWrapper : CreateStyle(style)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tconst myHelloWorld = new App.componentTypes.SimpleText(template);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myHelloWorld);\r\n\t\t}\r\n\t}\r\n}"}],"form101":[{"name":"form101Launcher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst myFormTemplate = TemplateFactory.createDef({\r\n\t\t\t    host : TemplateFactory.createHostDef({\r\n\t\t\t        props : [\r\n\t\t\t            {action : 'url/of/my/endpoint'}\r\n\t\t\t        ],\r\n\t\t\t        subscribeOnChild: [\r\n\t\t\t            {\r\n\t\t\t                 on : 'submit',\r\n\t\t\t                 subscribe : function(e) {this.trigger('submit')}\r\n\t\t\t            }\r\n\t\t\t        ]\r\n\t\t\t    }),\r\n\t\t\t    members : [\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'UsernameInput',\r\n\t\t\t             attributes : [\r\n\t\t\t                 {title : '-Username'}\r\n\t\t\t             ],\r\n\t\t\t             section : 0\r\n\t\t\t         }),\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'EMailInput',\r\n\t\t\t             attributes : [\r\n\t\t\t                 {title : '-EMail'}\r\n\t\t\t             ],\r\n\t\t\t             section : 0\r\n\t\t\t         }),\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'SubmitButton',\r\n\t\t\t             props : [\r\n\t\t\t                 {text : 'Register'}\r\n\t\t\t             ],\r\n\t\t\t             section : 1\r\n\t\t\t         })\r\n\t\t\t    ]\r\n\t\t\t});\r\n\t\t\tconst myForm = new App.componentTypes.FormComponent(myFormTemplate);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myForm);\r\n\t\t}\r\n\t}\r\n}"}],"list101":[{"name":"list101Launcher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t// UL\r\n\t\t\tconst listDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\tnodeName : 'ul',\r\n\t\t\t\t}),\r\n\t\t\t\tmembers : listItems.map(\r\n\t\t\t\t\t// LI as \"member-views\" of the component\r\n\t\t\t\t\t(item) => TemplateFactory.createDef({\r\n\t\t\t\t\t\tnodeName: 'li',\r\n\t\t\t\t\t\tattributes: [\r\n\t\t\t\t\t\t\t{ textContent: item }\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t})\r\n\t\t\t\t)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tconst ulComponent = new App.componentTypes.ComponentWithView(listDef);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, ulComponent);\r\n\t\t}\r\n\t}\r\n}"}],"reactiveListComponent":[{"name":"reactiveListComponentLauncher","content":"const {App} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciation of the list:\r\n\t\t\t * by default, the IteratingComponent generates a ul-li structure\r\n\t\t\t * As in Formant, explicitely passing null as the template is supported,\r\n\t\t\t * let's rely here on the default behavior of the component.\r\n\t\t\t */\r\n\t\t\tconst ulComponent = new App.coreComponents.IteratingComponent(null)\r\n\r\n\t\t\t/*\r\n\t\t\t * An example of override would be:\r\n\t\t\t * const hostDef = TemplateFactory.createHostDef({\r\n\t\t\t *\t\tnodeName : 'section',\r\n\t\t\t *\t});\r\n\t\t\t *\r\n\t\t\t * \tconst slotDef :TemplateFactory.createDef({\r\n\t\t\t *\t\thost : TemplateFactory.createDef({\r\n\t\t\t *\t\t\ttype : 'SimpleText',\r\n\t\t\t *\t\t\tnodeName : 'article'\r\n\t\t\t *\t\t})\r\n\t\t\t *\t})\r\n\t\t\t * const ulComponent = new App.coreComponents.IteratingComponent(hostDef, slotDef)\r\n\t\t\t */\r\n\t\t\t\r\n\t\t\t// Pass data to the IteratingComponent\r\n\t\t\tulComponent.acquireData(listItems);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, ulComponent);\r\n\t\t}\r\n\t}\r\n}"}],"customReactiveList":[{"name":"customReactiveListLauncher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * For this example, let's roughly say that we need a list of \"p\" elements in a \"div\"\r\n\t\t\t */\r\n\t\t\tconst listHostTemplate = TemplateFactory.createHostDef({\r\n\t\t\t\tnodeName : 'div',\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Define your own implementation for the list-item:\r\n\t\t\t *\r\n\t\t\t * The IteratingComponent expects a stream named \"text\" to be implemented.\r\n\t\t\t * Here, we rely on an abstract component-type given by the framework (ComponentWithView),\r\n\t\t\t * and we excplicitely implement the \"text\" stream,.\r\n\t\t\t */\r\n\t\t\t\r\n\t\t\tconst listItemTemplate = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\ttype : 'ComponentWithView',\r\n\t\t\t\t\tnodeName : 'p',\r\n\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t{text : undefined}\r\n\t\t\t\t\t],\r\n\t\t\t\t\treactOnSelf : [\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\tcbOnly : true,\r\n\t\t\t\t\t\t\tfrom : 'text',\r\n\t\t\t\t\t\t\tsubscribe : App.componentTypes.ComponentWithView.prototype.appendTextFromValueOnView\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t]\r\n\t\t\t\t})\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t// Instanciate the list: it is empty for now, it's just a \"div\" node\r\n\t\t\tconst listComponent = new App.coreComponents.IteratingComponent(listHostTemplate, listItemTemplate);\r\n\t\t\t\r\n\t\t\t// And populate it :)\r\n\t\t\tlistComponent.acquireData(listItems);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, listComponent);\r\n\t\t}\r\n\t}\r\n}"}],"table101":[{"name":"table101Launcher","content":"const {App, TemplateFactory, ReactiveDataset} = require('formantjs');\r\n\r\nconst buildData = require('src/App/helpers/table101DataBuilder');\r\nconst localStylesheet = require('src/App/codeSamples/table101StyleDef');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Build the schematic definition of the table\r\n\t\t\t */\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\t\r\n\t\t\tconst rowDef = TemplateFactory.createDef({\r\n\t\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\tsection : 1,\t\t\t\t\t// the \"section 1\" corresponds to the second subSection of the table\r\n\t\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t\t{id : undefined},\r\n\t\t\t\t\t\t\t{label : undefined}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t}),\r\n\t\t\t\t\t/*\r\n\t\t\t\t\t * We could have used Array.map(), here:\r\n\t\t\t\t\t * (as we do later on, here, in the \"tableDef\" template,\r\n\t\t\t\t\t * or in the \"Implementing bahaviors\" chapter)\r\n\t\t\t\t\t * Still, as we're in a documentation, let's illustrate\r\n\t\t\t\t\t * an explicit shape for a definition (both shapes are, of course, equivalent).\r\n\t\t\t\t\t */\r\n\t\t\t\t\tmembers : [\r\n\t\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\tfrom : 'id', \t\t// 'id' is the first column's name\r\n\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\tfrom : 'label', \t// 'label' is the second column's name\r\n\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t})\r\n\t\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tvar tableDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName : 'smart-table',\r\n\t\t\t\t\t/* \r\n\t\t\t\t\t * Local stylesheet\r\n\t\t\t\t\t */ \r\n\t\t\t\t\tsWrapper : localStylesheet\r\n\t\t\t\t}),\r\n\t\t\t\tsubSections : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'thead'}),\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'tbody'})\r\n\t\t\t\t],\r\n\t\t\t\t/*\r\n\t\t\t\t * As the header-elements are already known,\r\n\t\t\t\t * let's define them explicitely as a \"member-view\"\r\n\t\t\t\t * in the template of the table.\r\n\t\t\t\t */\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createDef({\r\n\t\t\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\t\t\tsection : 0\t\t\t\t\t// the \"section 0\" corresponds to the first subSection of the table\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'th',\r\n\t\t\t\t\t\t\t\tattributes : [\r\n\t\t\t\t\t\t\t\t\t{textContent : columnName}\r\n\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t)\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciate the component\r\n\t\t\t */\r\n\t\t\tconst myTable = new App.componentTypes.CompoundComponent(tableDef);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Inject & Bind data reactively\r\n\t\t\t */\r\n\t\t\tconst rows = new ReactiveDataset(\r\n\t\t\t\tnull,\t\t\t\t\t\t// only special use cases\r\n\t\t\t\tmyTable,\t\t\t\t\t// the parent of the components which shall be instanciated\r\n\t\t\t\trowDef,\t\t\t\t\t\t// the template for the components which shall be instanciated\r\n\t\t\t\tcolumnNames\t\t\t\t\t// the schema of the dataset\r\n\t\t\t);\r\n\t\t\t\r\n\t\t\t// buildData() returns an array of objects of type RactiveDataset.Item\r\n\t\t\t// and, here, of the following form :\r\n\t\t\t// \t[\r\n\t\t\t//\t\t{id : string, label : string}\r\n\t\t\t//\t]\r\n\t\t\t// (cause we've declared the column names as being the schema of the dataset)\r\n\t\t\t// The buildData helper function makes use of the factory provided by the instance of \r\n\t\t\t// the ReactiveDataset to type its own items.\r\n\t\t\tconst tableContent = buildData(10, rows);\r\n\t\t\trows.pushApply(tableContent);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Job done !\r\n\t\t\t */\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"},{"name":"table101DataBuilder","content":"const dummyData = {\r\n\tadjectives : [\"pretty\", \"large\", \"big\", \"small\", \"tall\", \"short\", \"long\", \"handsome\", \"plain\", \"quaint\", \"clean\", \"elegant\", \"easy\", \"angry\", \"crazy\", \"helpful\", \"mushy\", \"odd\", \"unsightly\", \"adorable\", \"important\", \"inexpensive\", \"cheap\", \"expensive\", \"fancy\"],\r\n\tcolours : [\"red\", \"yellow\", \"blue\", \"green\", \"pink\", \"brown\", \"purple\", \"brown\", \"white\", \"black\", \"orange\"],\r\n\tnouns : [\"table\", \"chair\", \"house\", \"bbq\", \"desk\", \"car\", \"pony\", \"cookie\", \"sandwich\", \"burger\", \"pizza\", \"mouse\", \"keyboard\"]\r\n};\r\n\r\nfunction buildData(count, appData) {\r\n\tconst data = [];\r\n\tlet itemStr = '';\r\n\tfor (let i = 0; i < count; i++) {\r\n\t\titemStr = dummyData.adjectives[randomOn(dummyData.adjectives.length)] + ' '\r\n\t\t\t\t+ dummyData.colours[randomOn(dummyData.colours.length)] + ' '\r\n\t\t\t\t+ dummyData.nouns[randomOn(dummyData.nouns.length)];\r\n\t\t\r\n\t\tdata.push(appData.newItem(\r\n\t\t\t\t\t\ti.toString(),\r\n\t\t\t\t\t\titemStr\r\n\t\t\t\t\t));\r\n\t}\r\n\treturn data;\r\n}\r\nfunction randomOn(max) {\r\n\treturn (Math.random() * max) | 0;\r\n}\r\n\r\nmodule.exports = buildData;\r\n"},{"name":"table101StyleDef","content":"/*\r\n * Local Stylesheet for a table\r\n */\r\nconst {CreateStyle} = require('formantjs');\r\n\r\nmodule.exports = CreateStyle([\r\n\t{\r\n\t\tselector: ':host',\r\n\t\tbackground: '#012B39',\r\n\t\tborderRadius: '0.25em',\r\n\t\tborderCollapse: 'collapse',\r\n\t\tmargin: '1em'\r\n\t},\r\n\t{\r\n\t\tselector: 'th',\r\n\t\tborderBottom: '1px solid #364043',\r\n\t\tcolor: '#E2B842',\r\n\t\tfontSize: '0.85em',\r\n\t\tfontWeight: '600',\r\n\t\tpadding: '0.5em 1em',\r\n\t\ttextAlign: 'left'\r\n\t},\r\n\t{\r\n\t\tselector: 'td',\r\n\t\tcolor: '#fff',\r\n\t\tfontWeight: '400',\r\n\t\tpadding: '0.65em 1em'\r\n\t},\r\n\t{\r\n\t\tselector: '.disabled td',\r\n\t\tcolor: '#4F5F64'\r\n\t},\r\n\t{\r\n\t\tselector: 'tbody tr',\r\n\t\ttransition: 'background 0.25s ease'\r\n\t},\r\n\t{\r\n\t\tselector: 'tbody tr:hover',\r\n\t\tbackground: '#014055'\r\n\t},\r\n\t{\r\n\t\tselector : 'tbody tr[selected]',\r\n\t\tbackgroundColor : '#115065'\r\n\t}\r\n]);"}],"tableComponent":[{"name":"tableComponentLauncher","content":"const {App} = require('formantjs');\r\nconst buildData = require('src/App/helpers/tableComponentDataBuilder');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst TableComponent = App.componentTypes.ExtensibleTable;\r\n\t\t\t\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\tconst myTable = new TableComponent();\r\n\t\t\tmyTable.setColumnsCount(2, columnNames);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Contrary to the table101 implementation,\r\n\t\t\t * buildData() only needs to return a array of string-arrays.\r\n\t\t\t * Internally, the ExtensibleTable component will convert it to\r\n\t\t\t * an array of objects of type ReactiveDataset.Item.\r\n\t\t\t * \r\n\t\t\t * (in the case of the ExtensibleTable, the ReactiveDataset.Item\r\n\t\t\t * has the following form :\r\n\t\t\t *\t\t{rowContentAsArray : [string, string]}\r\n\t\t\t * (a string for each declared column)\r\n\t\t\t */\r\n\t\t\tconst tableData = buildData(10);\r\n\t\t\tmyTable.acquireData(tableData);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"},{"name":"tableComponentDataBuilder","content":"const dummyData = {\r\n    adjectives : [\"pretty\", \"large\", \"big\", \"small\", \"tall\", \"short\", \"long\", \"handsome\", \"plain\", \"quaint\", \"clean\", \"elegant\", \"easy\", \"angry\", \"crazy\", \"helpful\", \"mushy\", \"odd\", \"unsightly\", \"adorable\", \"important\", \"inexpensive\", \"cheap\", \"expensive\", \"fancy\"],\r\n    colours : [\"red\", \"yellow\", \"blue\", \"green\", \"pink\", \"brown\", \"purple\", \"brown\", \"white\", \"black\", \"orange\"],\r\n    nouns : [\"table\", \"chair\", \"house\", \"bbq\", \"desk\", \"car\", \"pony\", \"cookie\", \"sandwich\", \"burger\", \"pizza\", \"mouse\", \"keyboard\"]\r\n};\r\n\r\nfunction buildData(count) {\r\n    const data = [];\r\n    let itemStr = '';\r\n    for (let i = 0; i < count; i++) {\r\n\t\titemStr = dummyData.adjectives[randomOn(dummyData.adjectives.length)] + ' '\r\n\t\t\t\t+ dummyData.colours[randomOn(dummyData.colours.length)] + ' '\r\n\t\t\t\t+ dummyData.nouns[randomOn(dummyData.nouns.length)];\r\n\t\t\r\n        data.push([i.toString(), itemStr]);\r\n    }\r\n    return data;\r\n}\r\nfunction randomOn(max) {\r\n    return (Math.random() * max) | 0;\r\n}\r\n\t\r\nmodule.exports = buildData;\r\n"}],"behaviorsTableSelect":[{"name":"behaviorsTableSelect","content":"const {App, TemplateFactory, ReactiveDataset} = require('formantjs');\r\n\r\nconst buildData = require('src/App/helpers/table101DataBuilder');\r\nconst localStylesheet = require('src/App/codeSamples/table101StyleDef');\r\n\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\t/*\r\n\t\t\t * Add style to illustrate the behavior\r\n\t\t\t */\r\n\t\t\tlocalStylesheet.setProp('tbody tr', 'cursor', 'pointer');\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Build the schematic definition of the table\r\n\t\t\t */\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\t\r\n\t\t\tconst rowDef = TemplateFactory.createDef({\r\n\t\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\t\ttype : 'ClickableComponent',\r\n\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\tsection : 1,\r\n\t\t\t\t\t\tstates : [\r\n\t\t\t\t\t\t\t{id : undefined},\r\n\t\t\t\t\t\t\t{selected : undefined}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t\t{label : undefined}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\tfrom : 'selected',\r\n\t\t\t\t\t\t\t\tto : 'selected',\r\n\t\t\t\t\t\t\t\tmap : function(componentKey) {return componentKey === this._key ? 'selected' : null} \r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\tsubscribeOnSelf : [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\ton : 'clicked_ok',\r\n\t\t\t\t\t\t\t\tsubscribe : function(e) {this.trigger('update', {changeSelected : this._key})}\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t}),\r\n\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\t\t\tfrom : columnName,\r\n\t\t\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t\t)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tvar tableDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName : 'smart-table',\r\n\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t{selected : undefined}\r\n\t\t\t\t\t],\r\n\t\t\t\t\tsubscribeOnChild : [\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\ton : 'update',\r\n\t\t\t\t\t\t\tsubscribe : function(e) {\r\n\t\t\t\t\t\t\t\tthis.streams.selected.value = e.data.changeSelected;\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t],\r\n\t\t\t\t\tsWrapper : localStylesheet\r\n\t\t\t\t}),\r\n\t\t\t\tsubSections : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'thead'}),\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'tbody'})\r\n\t\t\t\t],\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createDef({\r\n\t\t\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\t\t\tsection : 0\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'th',\r\n\t\t\t\t\t\t\t\tattributes : [\r\n\t\t\t\t\t\t\t\t\t{textContent : columnName}\r\n\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t)\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciate the component\r\n\t\t\t */\r\n\t\t\tconst myTable = new App.componentTypes.CompoundComponent(tableDef);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Inject & Bind data reactively\r\n\t\t\t */\r\n\t\t\tconst rows = new ReactiveDataset(\r\n\t\t\t\tnull,\t\t\t\t\t\t// only special use cases\r\n\t\t\t\tmyTable,\t\t\t\t\t// the parent of the components which shall be instanciated\r\n\t\t\t\trowDef,\t\t\t\t\t\t// the template for the components which shall be instanciated\r\n\t\t\t\tcolumnNames\t\t\t\t\t// the schema of the dataset\r\n\t\t\t);\r\n\t\t\t\r\n\t\t\tconst tableContent = buildData(10, rows);\r\n\t\t\trows.pushApply(tableContent);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"}]}};
+module.exports = {sourcesAsStringArrays : {"minimalHelloWorld":[{"name":"minimalHelloWorldLauncher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst template = TemplateFactory.createHostDef({\r\n\t\t\t\tnodeName: 'span',\r\n\t\t\t\tattributes: [\r\n\t\t\t\t\t{ textContent: 'Hello World!' }\r\n\t\t\t\t]\r\n\t\t\t});\r\n\r\n\t\t\tconst myHelloWorld = new App.componentTypes.ComponentWithView(template);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myHelloWorld);\r\n\t\t}\r\n\t}\r\n}"}],"reactiveHelloWorld":[{"name":"reactiveHelloWorldLauncher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst outerTemplate = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName: 'p',\r\n\t\t\t\t\tstates: [\r\n\t\t\t\t\t\t{ someState: 'Hello World!' }\r\n\t\t\t\t\t]\r\n\t\t\t\t}),\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\tnodeName: 'span',\r\n\t\t\t\t\t\treactOnParent: [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\tfrom: 'someState',\r\n\t\t\t\t\t\t\t\tto: 'text'\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\r\n\t\t\tconst myComponent = new App.componentTypes.CompoundComponent(outerTemplate);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myComponent);\r\n\t\t}\r\n\t}\r\n}"}],"stylingBasics":[{"name":"stylingBasicsLauncher","content":"const {App, TemplateFactory, CreateStyle} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst style = [\r\n\t\t\t    {\r\n\t\t\t        selector : ':host',\r\n\t\t\t        color : '#FF0000'    // red\r\n\t\t\t    }\r\n\t\t\t];\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Automagic: using a DOM custom-element shall scope the style on the shadowRoot.\r\n\t\t\t * Consequence: we can't use the DOM \"textContent\" attribute here.\r\n\t\t\t * => let's use the SimpleText Component we've discovered in the last chapter.\r\n\t\t\t*/\r\n\t\t\tconst template = TemplateFactory.createHostDef({\r\n\t\t\t    nodeName : 'my-span',\r\n\t\t\t    props : [\r\n\t\t\t        {text : 'Hello World!'}\r\n\t\t\t    ],\r\n\t\t\t    sWrapper : CreateStyle(style)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tconst myHelloWorld = new App.componentTypes.SimpleText(template);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myHelloWorld);\r\n\t\t}\r\n\t}\r\n}"}],"form101":[{"name":"form101Launcher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst myFormTemplate = TemplateFactory.createDef({\r\n\t\t\t    host : TemplateFactory.createHostDef({\r\n\t\t\t        props : [\r\n\t\t\t            {action : 'url/of/my/endpoint'}\r\n\t\t\t        ],\r\n\t\t\t        subscribeOnChild: [\r\n\t\t\t            {\r\n\t\t\t                 on : 'submit',\r\n\t\t\t                 subscribe : function(e) {this.trigger('submit')}\r\n\t\t\t            }\r\n\t\t\t        ]\r\n\t\t\t    }),\r\n\t\t\t    members : [\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'UsernameInput',\r\n\t\t\t             attributes : [\r\n\t\t\t                 {title : '-Username'}\r\n\t\t\t             ],\r\n\t\t\t             section : 0\r\n\t\t\t         }),\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'EMailInput',\r\n\t\t\t             attributes : [\r\n\t\t\t                 {title : '-EMail'}\r\n\t\t\t             ],\r\n\t\t\t             section : 0\r\n\t\t\t         }),\r\n\t\t\t         TemplateFactory.createHostDef({\r\n\t\t\t             type : 'SubmitButton',\r\n\t\t\t             props : [\r\n\t\t\t                 {text : 'Register'}\r\n\t\t\t             ],\r\n\t\t\t             section : 1\r\n\t\t\t         })\r\n\t\t\t    ]\r\n\t\t\t});\r\n\t\t\tconst myForm = new App.componentTypes.FormComponent(myFormTemplate);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myForm);\r\n\t\t}\r\n\t}\r\n}"}],"list101":[{"name":"list101Launcher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t// UL\r\n\t\t\tconst listDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\tnodeName : 'ul',\r\n\t\t\t\t}),\r\n\t\t\t\tmembers : listItems.map(\r\n\t\t\t\t\t// LI as \"member-views\" of the component\r\n\t\t\t\t\t(item) => TemplateFactory.createDef({\r\n\t\t\t\t\t\tnodeName: 'li',\r\n\t\t\t\t\t\tattributes: [\r\n\t\t\t\t\t\t\t{ textContent: item }\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t})\r\n\t\t\t\t)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tconst ulComponent = new App.componentTypes.ComponentWithView(listDef);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, ulComponent);\r\n\t\t}\r\n\t}\r\n}"}],"reactiveListComponent":[{"name":"reactiveListComponentLauncher","content":"const {App} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciation of the list:\r\n\t\t\t * by default, the IteratingComponent generates a ul-li structure\r\n\t\t\t * As in Formant, explicitely passing null as the template is supported,\r\n\t\t\t * let's rely here on the default behavior of the component.\r\n\t\t\t */\r\n\t\t\tconst ulComponent = new App.coreComponents.IteratingComponent(null)\r\n\r\n\t\t\t/*\r\n\t\t\t * An example of override would be:\r\n\t\t\t * const hostDef = TemplateFactory.createHostDef({\r\n\t\t\t *\t\tnodeName : 'section',\r\n\t\t\t *\t});\r\n\t\t\t *\r\n\t\t\t * \tconst slotDef :TemplateFactory.createDef({\r\n\t\t\t *\t\thost : TemplateFactory.createDef({\r\n\t\t\t *\t\t\ttype : 'SimpleText',\r\n\t\t\t *\t\t\tnodeName : 'article'\r\n\t\t\t *\t\t})\r\n\t\t\t *\t})\r\n\t\t\t * const ulComponent = new App.coreComponents.IteratingComponent(hostDef, slotDef)\r\n\t\t\t */\r\n\t\t\t\r\n\t\t\t// Pass data to the IteratingComponent\r\n\t\t\tulComponent.acquireData(listItems);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, ulComponent);\r\n\t\t}\r\n\t}\r\n}"}],"customReactiveList":[{"name":"customReactiveListLauncher","content":"const {App, TemplateFactory} = require('formantjs');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst listItems = ['Pepper', 'Salt', 'Paprika'];\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * For this example, let's roughly say that we need a list of \"p\" elements in a \"div\"\r\n\t\t\t */\r\n\t\t\tconst listHostTemplate = TemplateFactory.createHostDef({\r\n\t\t\t\tnodeName : 'div',\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Define your own implementation for the list-item:\r\n\t\t\t *\r\n\t\t\t * The IteratingComponent expects a stream named \"text\" to be implemented.\r\n\t\t\t * Here, we rely on an abstract component-type given by the framework (ComponentWithView),\r\n\t\t\t * and we excplicitely implement the \"text\" stream,.\r\n\t\t\t */\r\n\t\t\t\r\n\t\t\tconst listItemTemplate = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\ttype : 'ComponentWithView',\r\n\t\t\t\t\tnodeName : 'p',\r\n\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t{text : undefined}\r\n\t\t\t\t\t],\r\n\t\t\t\t\treactOnSelf : [\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\tcbOnly : true,\r\n\t\t\t\t\t\t\tfrom : 'text',\r\n\t\t\t\t\t\t\tsubscribe : App.componentTypes.ComponentWithView.prototype.appendTextFromValueOnView\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t]\r\n\t\t\t\t})\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t// Instanciate the list: it is empty for now, it's just a \"div\" node\r\n\t\t\tconst listComponent = new App.coreComponents.IteratingComponent(listHostTemplate, listItemTemplate);\r\n\t\t\t\r\n\t\t\t// And populate it :)\r\n\t\t\tlistComponent.acquireData(listItems);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, listComponent);\r\n\t\t}\r\n\t}\r\n}"}],"table101":[{"name":"table101Launcher","content":"const {App, TemplateFactory, ReactiveDataset} = require('formantjs');\r\n\r\nconst buildData = require('src/App/helpers/table101DataBuilder');\r\nconst localStylesheet = require('src/App/codeSamples/table101StyleDef');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Build the schematic definition of the table\r\n\t\t\t */\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\t\r\n\t\t\tconst rowDef = TemplateFactory.createDef({\r\n\t\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\tsection : 1,\t\t\t\t\t// the \"section 1\" corresponds to the second subSection of the table\r\n\t\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t\t{id : undefined},\r\n\t\t\t\t\t\t\t{label : undefined}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t}),\r\n\t\t\t\t\t/*\r\n\t\t\t\t\t * We could have used Array.map(), here:\r\n\t\t\t\t\t * (as we do later on, here, in the \"tableDef\" template,\r\n\t\t\t\t\t * or in the \"Implementing bahaviors\" chapter)\r\n\t\t\t\t\t * Still, as we're in a documentation, let's illustrate\r\n\t\t\t\t\t * an explicit shape for a definition (both shapes are, of course, equivalent).\r\n\t\t\t\t\t */\r\n\t\t\t\t\tmembers : [\r\n\t\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\tfrom : 'id', \t\t// 'id' is the first column's name\r\n\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tTemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\tfrom : 'label', \t// 'label' is the second column's name\r\n\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t})\r\n\t\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tvar tableDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName : 'smart-table',\r\n\t\t\t\t\t/* \r\n\t\t\t\t\t * Local stylesheet\r\n\t\t\t\t\t */ \r\n\t\t\t\t\tsWrapper : localStylesheet\r\n\t\t\t\t}),\r\n\t\t\t\tsubSections : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'thead'}),\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'tbody'})\r\n\t\t\t\t],\r\n\t\t\t\t/*\r\n\t\t\t\t * As the header-elements are already known,\r\n\t\t\t\t * let's define them explicitely as a \"member-view\"\r\n\t\t\t\t * in the template of the table.\r\n\t\t\t\t */\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createDef({\r\n\t\t\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\t\t\tsection : 0\t\t\t\t\t// the \"section 0\" corresponds to the first subSection of the table\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'th',\r\n\t\t\t\t\t\t\t\tattributes : [\r\n\t\t\t\t\t\t\t\t\t{textContent : columnName}\r\n\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t)\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciate the component\r\n\t\t\t */\r\n\t\t\tconst myTable = new App.componentTypes.CompoundComponent(tableDef);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Inject & Bind data reactively\r\n\t\t\t */\r\n\t\t\tconst rows = new ReactiveDataset(\r\n\t\t\t\tnull,\t\t\t\t\t\t// only special use cases\r\n\t\t\t\tmyTable,\t\t\t\t\t// the parent of the components which shall be instanciated\r\n\t\t\t\trowDef,\t\t\t\t\t\t// the template for the components which shall be instanciated\r\n\t\t\t\tcolumnNames\t\t\t\t\t// the schema of the dataset\r\n\t\t\t);\r\n\t\t\t\r\n\t\t\t// buildData() returns an array of objects of type RactiveDataset.Item\r\n\t\t\t// and, here, of the following form :\r\n\t\t\t// \t[\r\n\t\t\t//\t\t{id : string, label : string}\r\n\t\t\t//\t]\r\n\t\t\t// (cause we've declared the column names as being the schema of the dataset)\r\n\t\t\t// The buildData helper function makes use of the factory provided by the instance of \r\n\t\t\t// the ReactiveDataset to type its own items.\r\n\t\t\tconst tableContent = buildData(10, rows);\r\n\t\t\trows.pushApply(tableContent);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Job done !\r\n\t\t\t */\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"},{"name":"table101StyleDef","content":"/*\r\n * Local Stylesheet for a table\r\n */\r\nconst {CreateStyle} = require('formantjs');\r\n\r\nmodule.exports = CreateStyle([\r\n\t{\r\n\t\tselector: ':host',\r\n\t\tbackground: '#012B39',\r\n\t\tborderRadius: '0.25em',\r\n\t\tborderCollapse: 'collapse',\r\n\t\tmargin: '1em'\r\n\t},\r\n\t{\r\n\t\tselector: 'th',\r\n\t\tborderBottom: '1px solid #364043',\r\n\t\tcolor: '#E2B842',\r\n\t\tfontSize: '0.85em',\r\n\t\tfontWeight: '600',\r\n\t\tpadding: '0.5em 1em',\r\n\t\ttextAlign: 'left'\r\n\t},\r\n\t{\r\n\t\tselector: 'td',\r\n\t\tcolor: '#fff',\r\n\t\tfontWeight: '400',\r\n\t\tpadding: '0.65em 1em'\r\n\t},\r\n\t{\r\n\t\tselector: '.disabled td',\r\n\t\tcolor: '#4F5F64'\r\n\t},\r\n\t{\r\n\t\tselector: 'tbody tr',\r\n\t\ttransition: 'background 0.25s ease'\r\n\t},\r\n\t{\r\n\t\tselector: 'tbody tr:hover',\r\n\t\tbackground: '#014055'\r\n\t},\r\n\t{\r\n\t\tselector : 'tbody tr[selected]',\r\n\t\tbackgroundColor : '#115065'\r\n\t}\r\n]);"},{"name":"table101DataBuilder","content":"const dummyData = {\r\n\tadjectives : [\"pretty\", \"large\", \"big\", \"small\", \"tall\", \"short\", \"long\", \"handsome\", \"plain\", \"quaint\", \"clean\", \"elegant\", \"easy\", \"angry\", \"crazy\", \"helpful\", \"mushy\", \"odd\", \"unsightly\", \"adorable\", \"important\", \"inexpensive\", \"cheap\", \"expensive\", \"fancy\"],\r\n\tcolours : [\"red\", \"yellow\", \"blue\", \"green\", \"pink\", \"brown\", \"purple\", \"brown\", \"white\", \"black\", \"orange\"],\r\n\tnouns : [\"table\", \"chair\", \"house\", \"bbq\", \"desk\", \"car\", \"pony\", \"cookie\", \"sandwich\", \"burger\", \"pizza\", \"mouse\", \"keyboard\"]\r\n};\r\n\r\nfunction buildData(count, appData) {\r\n\tconst data = [];\r\n\tlet itemStr = '';\r\n\tfor (let i = 0; i < count; i++) {\r\n\t\titemStr = dummyData.adjectives[randomOn(dummyData.adjectives.length)] + ' '\r\n\t\t\t\t+ dummyData.colours[randomOn(dummyData.colours.length)] + ' '\r\n\t\t\t\t+ dummyData.nouns[randomOn(dummyData.nouns.length)];\r\n\t\t\r\n\t\tdata.push(appData.newItem(\r\n\t\t\t\t\t\ti.toString(),\r\n\t\t\t\t\t\titemStr\r\n\t\t\t\t\t));\r\n\t}\r\n\treturn data;\r\n}\r\nfunction randomOn(max) {\r\n\treturn (Math.random() * max) | 0;\r\n}\r\n\r\nmodule.exports = buildData;\r\n"}],"tableComponent":[{"name":"tableComponentLauncher","content":"const {App} = require('formantjs');\r\nconst buildData = require('src/App/helpers/tableComponentDataBuilder');\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\tconst TableComponent = App.componentTypes.ExtensibleTable;\r\n\t\t\t\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\tconst myTable = new TableComponent();\r\n\t\t\tmyTable.setColumnsCount(2, columnNames);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Contrary to the table101 implementation,\r\n\t\t\t * buildData() only needs to return a array of string-arrays.\r\n\t\t\t * Internally, the ExtensibleTable component will convert it to\r\n\t\t\t * an array of objects of type ReactiveDataset.Item.\r\n\t\t\t * \r\n\t\t\t * (in the case of the ExtensibleTable, the ReactiveDataset.Item\r\n\t\t\t * has the following form :\r\n\t\t\t *\t\t{rowContentAsArray : [string, string]}\r\n\t\t\t * (a string for each declared column)\r\n\t\t\t */\r\n\t\t\tconst tableData = buildData(10);\r\n\t\t\tmyTable.acquireData(tableData);\r\n\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"},{"name":"tableComponentDataBuilder","content":"const dummyData = {\r\n    adjectives : [\"pretty\", \"large\", \"big\", \"small\", \"tall\", \"short\", \"long\", \"handsome\", \"plain\", \"quaint\", \"clean\", \"elegant\", \"easy\", \"angry\", \"crazy\", \"helpful\", \"mushy\", \"odd\", \"unsightly\", \"adorable\", \"important\", \"inexpensive\", \"cheap\", \"expensive\", \"fancy\"],\r\n    colours : [\"red\", \"yellow\", \"blue\", \"green\", \"pink\", \"brown\", \"purple\", \"brown\", \"white\", \"black\", \"orange\"],\r\n    nouns : [\"table\", \"chair\", \"house\", \"bbq\", \"desk\", \"car\", \"pony\", \"cookie\", \"sandwich\", \"burger\", \"pizza\", \"mouse\", \"keyboard\"]\r\n};\r\n\r\nfunction buildData(count) {\r\n    const data = [];\r\n    let itemStr = '';\r\n    for (let i = 0; i < count; i++) {\r\n\t\titemStr = dummyData.adjectives[randomOn(dummyData.adjectives.length)] + ' '\r\n\t\t\t\t+ dummyData.colours[randomOn(dummyData.colours.length)] + ' '\r\n\t\t\t\t+ dummyData.nouns[randomOn(dummyData.nouns.length)];\r\n\t\t\r\n        data.push([i.toString(), itemStr]);\r\n    }\r\n    return data;\r\n}\r\nfunction randomOn(max) {\r\n    return (Math.random() * max) | 0;\r\n}\r\n\t\r\nmodule.exports = buildData;\r\n"}],"behaviorsTableSelect":[{"name":"behaviorsTableSelect","content":"const {App, TemplateFactory, ReactiveDataset} = require('formantjs');\r\n\r\nconst buildData = require('src/App/helpers/table101DataBuilder');\r\nconst localStylesheet = require('src/App/codeSamples/table101StyleDef');\r\n\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit : function(containerSelector) {\r\n\t\t\t/*\r\n\t\t\t * Add style to illustrate the behavior\r\n\t\t\t */\r\n\t\t\tlocalStylesheet.setProp('tbody tr', 'cursor', 'pointer');\r\n\t\t\t\r\n\t\t\t/*\r\n\t\t\t * Build the schematic definition of the table\r\n\t\t\t */\r\n\t\t\tconst columnNames = ['id', 'label'];\r\n\t\t\t\r\n\t\t\tconst rowDef = TemplateFactory.createDef({\r\n\t\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\t\ttype : 'ClickableComponent',\r\n\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\tsection : 1,\r\n\t\t\t\t\t\tstates : [\r\n\t\t\t\t\t\t\t{id : undefined},\r\n\t\t\t\t\t\t\t{selected : undefined}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t\t{label : undefined}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\tfrom : 'selected',\r\n\t\t\t\t\t\t\t\tto : 'selected',\r\n\t\t\t\t\t\t\t\tmap : function(componentKey) {return componentKey === this._key ? 'selected' : null} \r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t],\r\n\t\t\t\t\t\tsubscribeOnSelf : [\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\ton : 'clicked_ok',\r\n\t\t\t\t\t\t\t\tsubscribe : function(e) {this.trigger('update', {changeSelected : this._key})}\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t}),\r\n\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createHostDef({\r\n\t\t\t\t\t\t\t\t\ttype : 'SimpleText',\r\n\t\t\t\t\t\t\t\t\tnodeName : 'td',\r\n\t\t\t\t\t\t\t\t\treactOnParent : [\r\n\t\t\t\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\t\t\tfrom : columnName,\r\n\t\t\t\t\t\t\t\t\t\t\tto : 'text'\r\n\t\t\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t\t)\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\tvar tableDef = TemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createHostDef({\r\n\t\t\t\t\tnodeName : 'smart-table',\r\n\t\t\t\t\tprops : [\r\n\t\t\t\t\t\t{selected : undefined}\r\n\t\t\t\t\t],\r\n\t\t\t\t\tsubscribeOnChild : [\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\ton : 'update',\r\n\t\t\t\t\t\t\tsubscribe : function(e) {\r\n\t\t\t\t\t\t\t\tthis.streams.selected.value = e.data.changeSelected;\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t],\r\n\t\t\t\t\tsWrapper : localStylesheet\r\n\t\t\t\t}),\r\n\t\t\t\tsubSections : [\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'thead'}),\r\n\t\t\t\t\tTemplateFactory.createHostDef({type : 'ComponentWithView', nodeName : 'tbody'})\r\n\t\t\t\t],\r\n\t\t\t\tmembers : [\r\n\t\t\t\t\tTemplateFactory.createDef({\r\n\t\t\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'tr',\r\n\t\t\t\t\t\t\t\tsection : 0\r\n\t\t\t\t\t\t}),\r\n\t\t\t\t\t\tmembers : columnNames.map(\r\n\t\t\t\t\t\t\t(columnName) => TemplateFactory.createDef({\r\n\t\t\t\t\t\t\t\tnodeName : 'th',\r\n\t\t\t\t\t\t\t\tattributes : [\r\n\t\t\t\t\t\t\t\t\t{textContent : columnName}\r\n\t\t\t\t\t\t\t\t]\r\n\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t)\r\n\t\t\t\t\t})\r\n\t\t\t\t]\r\n\t\t\t});\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Instanciate the component\r\n\t\t\t */\r\n\t\t\tconst myTable = new App.componentTypes.CompoundComponent(tableDef);\r\n\t\t\t\r\n\t\t\t/* \r\n\t\t\t * Inject & Bind data reactively\r\n\t\t\t */\r\n\t\t\tconst rows = new ReactiveDataset(\r\n\t\t\t\tnull,\t\t\t\t\t\t// only special use cases\r\n\t\t\t\tmyTable,\t\t\t\t\t// the parent of the components which shall be instanciated\r\n\t\t\t\trowDef,\t\t\t\t\t\t// the template for the components which shall be instanciated\r\n\t\t\t\tcolumnNames\t\t\t\t\t// the schema of the dataset\r\n\t\t\t);\r\n\t\t\t\r\n\t\t\tconst tableContent = buildData(10, rows);\r\n\t\t\trows.pushApply(tableContent);\r\n\t\t\t\r\n\t\t\treturn App.renderDOM(containerSelector, myTable);\r\n\t\t}\r\n\t}\r\n}"}],"gradientGenerator":[{"name":"gradientGeneratorLauncher","content":"const {App, TemplateFactory} = require('formantjs');\r\nconst GradientGenerator = require('../components/GradientGenerator/gradientGenerator');\r\nApp.componentTypes.CompositorComponent.createAppLevelExtendedComponent();\r\n\r\nmodule.exports = function(parentView) {\r\n\treturn {\r\n\t\tinit: function(containerSelector) {\r\n\t\t\tconst root = new App.RootView();\r\n\t\t\tconst gradientGenerator = new GradientGenerator(null, root.view, {width : 400});\r\n\t\t\t\r\n\t\t\tconst componentToInject = App.renderDOM(null, gradientGenerator);\r\n\t\t\t\r\n\t\t\tgradientGenerator._children[1].streams['currentColor'].value = '#507090'; \r\n\t\t\tgradientGenerator._children[2].streams['currentColor'].value = '#EECC22';\r\n\t\t\t\r\n\t\t\treturn componentToInject;\r\n\t\t}\r\n\t}\r\n}"},{"name":"gradientGenerator","content":"/**\r\n * @constructor GradientGenerator\r\n * @author : Kinegraphx\r\n*/\r\n\r\nconst {App, TemplateFactory, Components} = require('formantjs');\r\n\r\nvar createGradientGeneratorHostDef = require('src/App/components/GradientGenerator/componentDefs/gradientGeneratorHostDef');\r\n//var createGradientGeneratorSlotsDef = require('src/UI/categories/_recentlyCreated/GradientGenerator/componentDefs/GradientGeneratorSlotsDef');\r\n\r\nconst GradientGenerator = function(definition, parentView, options) {\r\n\tif (definition === null) {\r\n\t\tdefinition = TemplateFactory.mockGroupDef();\r\n\t}\r\n\tdefinition.getHostDef().options = {width : options.width};\r\n\t\r\n\tComponents.CompositorComponent.call(this, definition, parentView, parent);\r\n\tthis.objectType = 'GradientGenerator';\r\n\t\r\n\tthis.colors = [];\r\n}\r\nGradientGenerator.prototype = Object.create(Components.CompositorComponent.prototype);\r\nGradientGenerator.prototype.extendsCore = \"CompoundComponentWithHooks\";\r\nGradientGenerator.prototype.objectType = 'GradientGenerator';\r\n\r\nGradientGenerator.prototype.createDefaultDef = function(definition) {\r\n\treturn createGradientGeneratorHostDef(definition.options);\r\n}\r\n\r\nGradientGenerator.prototype._asyncRegisterTasks = [];\r\nGradientGenerator.prototype._asyncRegisterTasks.push(new TemplateFactory.TaskDefinitionModel({\r\n\ttype : 'lateBinding',\r\n\ttask : function() {\r\n\t\tthis._children.forEach(function(child, key) {\r\n\t\t\tif (key > 0)\r\n\t\t\t\tthis.colors.push({\r\n\t\t\t\t\tcolor : '',\r\n\t\t\t\t\tposition : (child._key - 1) * 100\r\n\t\t\t\t})\r\n\t\t}, this);\r\n\t}\r\n}));\r\n\r\nApp.componentTypes.GradientGenerator = GradientGenerator;\r\nmodule.exports = GradientGenerator;"},{"name":"gradientGeneratorHostDef","content":"/**\r\n * @def GradientGenerator\r\n * @author : Kinegraphx\r\n * @isGroup true\r\n * \r\n */\r\nconst {TemplateFactory, CreateStyle} = require('formantjs');\r\n\r\n\r\nvar gradientGeneratorDef = function(options) {\r\n\t\r\n\treturn TemplateFactory.createDef({\r\n\t\thost : TemplateFactory.createHostDef({\r\n\t\t\tnodeName : 'gradient-generator',\r\n\t\t\tsubscribeOnChild : [\r\n\t\t\t\t{\r\n\t\t\t\t\ton : 'update',\r\n\t\t\t\t\tsubscribe : function(e) {\r\n\t\t\t\t\t\tif (e.data.type === 'colorChanged')\r\n\t\t\t\t\t\t\tthis.colors[e.data.key - 1].color = e.data.value;\r\n\t\t\t\t\t\telse if (e.data.type === 'positionChanged')\r\n\t\t\t\t\t\t\tthis.colors[e.data.key - 1].position = e.data.value;\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\tlet styleStr = 'linear-gradient(to right, ';\r\n\t\t\t\t\t\tthis.colors.forEach(function(color, key) {\r\n\t\t\t\t\t\t\tstyleStr += color.color + ' ' + color.position + '%';\r\n\t\t\t\t\t\t\tif (key < this.colors.length - 1)\r\n\t\t\t\t\t\t\t\tstyleStr += ', ';\r\n\t\t\t\t\t\t}, this);\r\n\t\t\t\t\t\tstyleStr += ')';\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\tthis.view.getMasterNode().style.background = styleStr;\r\n\t\t\t\t\t\tthis._children[0].streams.text.value = styleStr;\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t],\r\n\t\t\tsWrapper : CreateStyle([\r\n\t\t\t\t{\r\n\t\t\t\t\tselector : ':host',\r\n\t\t\t\t\tcolor : '#777',\r\n\t\t\t\t\tposition: 'absolute',\r\n\t\t\t\t\tleft: '50%',\r\n\t\t\t\t\tmarginLeft : -(options.width / 2) + 'px',\r\n\t\t\t\t\tmarginTop : '50px', \r\n\t\t\t\t\twidth : options.width + 'px',\r\n\t\t\t\t\theight : '40px',\r\n\t\t\t\t\tborder : '1px #777 solid'\r\n\t\t\t\t},\r\n\t\t\t\t{\r\n\t\t\t\t\tselector : ':host p',\r\n\t\t\t\t\tfontSize : '14px',\r\n\t\t\t\t\ttextAlign : 'center',\r\n\t\t\t\t\twidth : (options.width - 4) + 'px',\r\n\t\t\t\t\theight : '26px',\r\n\t\t\t\t\tmarginTop : '45px',\r\n\t\t\t\t\tborder : '1px #777 solid',\r\n\t\t\t\t\tborderRadius : '7px'\r\n\t\t\t\t}\r\n\t\t\t])\r\n\t\t}),\r\n\t\tmembers : [\r\n\t\t\tTemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\ttype : 'SimpleTextReplace',\r\n\t\t\t\t\tnodeName : 'p'\r\n\t\t\t\t})\r\n\t\t\t}),\r\n\t\t\tTemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\ttype : 'ColorPickerSliderInput',\r\n\t\t\t\t}),\r\n\t\t\t\toptions : {\r\n\t\t\t\t\tinitialLeft : 0,\r\n\t\t\t\t\txMax : options.width\r\n\t\t\t\t}\r\n\t\t\t}),\r\n\t\t\tTemplateFactory.createDef({\r\n\t\t\t\thost : TemplateFactory.createDef({\r\n\t\t\t\t\ttype : 'ColorPickerSliderInput',\r\n\t\t\t\t}),\r\n\t\t\t\toptions : {\r\n\t\t\t\t\tinitialLeft : options.width,\r\n\t\t\t\t\txMax : options.width\r\n\t\t\t\t}\r\n\t\t\t})\r\n\t\t]\r\n\t});\r\n}\r\n\r\nmodule.exports = gradientGeneratorDef;"}]}};
 },{}],5:[function(_dereq_,module,exports){
 const {App, TemplateFactory, ReactiveDataset} = _dereq_('formantjs');
 
@@ -47330,7 +47519,7 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formantjs":3,"src/App/codeSamples/table101StyleDef":15,"src/App/helpers/table101DataBuilder":17}],6:[function(_dereq_,module,exports){
+},{"formantjs":3,"src/App/codeSamples/table101StyleDef":16,"src/App/helpers/table101DataBuilder":20}],6:[function(_dereq_,module,exports){
 const {App, TemplateFactory} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
@@ -47430,6 +47619,26 @@ module.exports = function(parentView) {
 }
 },{"formantjs":3}],8:[function(_dereq_,module,exports){
 const {App, TemplateFactory} = _dereq_('formantjs');
+const GradientGenerator = _dereq_('../components/GradientGenerator/gradientGenerator');
+App.componentTypes.CompositorComponent.createAppLevelExtendedComponent();
+
+module.exports = function(parentView) {
+	return {
+		init: function(containerSelector) {
+			const root = new App.RootView();
+			const gradientGenerator = new GradientGenerator(null, root.view, {width : 400});
+			
+			const componentToInject = App.renderDOM(null, gradientGenerator);
+			
+			gradientGenerator._children[1].streams['currentColor'].value = '#507090'; 
+			gradientGenerator._children[2].streams['currentColor'].value = '#EECC22';
+			
+			return componentToInject;
+		}
+	}
+}
+},{"../components/GradientGenerator/gradientGenerator":19,"formantjs":3}],9:[function(_dereq_,module,exports){
+const {App, TemplateFactory} = _dereq_('formantjs');
 //const ReactiveDataset = require('src/core/ReactiveDataset');
 //const graphQLCaseStudyTabSlotDef = require('src/codeSamples/graphQLCaseStudyTabDef');
 
@@ -47493,7 +47702,7 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formantjs":3}],9:[function(_dereq_,module,exports){
+},{"formantjs":3}],10:[function(_dereq_,module,exports){
 const {App, TemplateFactory} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
@@ -47523,7 +47732,7 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formantjs":3}],10:[function(_dereq_,module,exports){
+},{"formantjs":3}],11:[function(_dereq_,module,exports){
 const {App, TemplateFactory} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
@@ -47542,7 +47751,7 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formantjs":3}],11:[function(_dereq_,module,exports){
+},{"formantjs":3}],12:[function(_dereq_,module,exports){
 const {App, TemplateFactory} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
@@ -47575,7 +47784,7 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formantjs":3}],12:[function(_dereq_,module,exports){
+},{"formantjs":3}],13:[function(_dereq_,module,exports){
 const {App} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
@@ -47613,7 +47822,7 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formantjs":3}],13:[function(_dereq_,module,exports){
+},{"formantjs":3}],14:[function(_dereq_,module,exports){
 const {App, TemplateFactory, CreateStyle} = _dereq_('formantjs');
 
 module.exports = function(parentView) {
@@ -47645,7 +47854,7 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formantjs":3}],14:[function(_dereq_,module,exports){
+},{"formantjs":3}],15:[function(_dereq_,module,exports){
 const {App, TemplateFactory, ReactiveDataset} = _dereq_('formantjs');
 
 const buildData = _dereq_('src/App/helpers/table101DataBuilder');
@@ -47768,7 +47977,7 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formantjs":3,"src/App/codeSamples/table101StyleDef":15,"src/App/helpers/table101DataBuilder":17}],15:[function(_dereq_,module,exports){
+},{"formantjs":3,"src/App/codeSamples/table101StyleDef":16,"src/App/helpers/table101DataBuilder":20}],16:[function(_dereq_,module,exports){
 /*
  * Local Stylesheet for a table
  */
@@ -47814,7 +48023,7 @@ module.exports = CreateStyle([
 		backgroundColor : '#115065'
 	}
 ]);
-},{"formantjs":3}],16:[function(_dereq_,module,exports){
+},{"formantjs":3}],17:[function(_dereq_,module,exports){
 const {App} = _dereq_('formantjs');
 const buildData = _dereq_('src/App/helpers/tableComponentDataBuilder');
 
@@ -47845,7 +48054,144 @@ module.exports = function(parentView) {
 		}
 	}
 }
-},{"formantjs":3,"src/App/helpers/tableComponentDataBuilder":18}],17:[function(_dereq_,module,exports){
+},{"formantjs":3,"src/App/helpers/tableComponentDataBuilder":21}],18:[function(_dereq_,module,exports){
+/**
+ * @def GradientGenerator
+ * @author : Kinegraphx
+ * @isGroup true
+ * 
+ */
+const {TemplateFactory, CreateStyle} = _dereq_('formantjs');
+
+
+var gradientGeneratorDef = function(options) {
+	
+	return TemplateFactory.createDef({
+		host : TemplateFactory.createHostDef({
+			nodeName : 'gradient-generator',
+			subscribeOnChild : [
+				{
+					on : 'update',
+					subscribe : function(e) {
+						if (e.data.type === 'colorChanged')
+							this.colors[e.data.key - 1].color = e.data.value;
+						else if (e.data.type === 'positionChanged')
+							this.colors[e.data.key - 1].position = e.data.value;
+						
+						let styleStr = 'linear-gradient(to right, ';
+						this.colors.forEach(function(color, key) {
+							styleStr += color.color + ' ' + color.position + '%';
+							if (key < this.colors.length - 1)
+								styleStr += ', ';
+						}, this);
+						styleStr += ')';
+						
+						this.view.getMasterNode().style.background = styleStr;
+						this._children[0].streams.text.value = styleStr;
+					}
+				}
+			],
+			sWrapper : CreateStyle([
+				{
+					selector : ':host',
+					color : '#777',
+					position: 'absolute',
+					left: '50%',
+					marginLeft : -(options.width / 2) + 'px',
+					marginTop : '50px', 
+					width : options.width + 'px',
+					height : '40px',
+					border : '1px #777 solid'
+				},
+				{
+					selector : ':host p',
+					fontSize : '14px',
+					textAlign : 'center',
+					width : (options.width - 4) + 'px',
+					height : '26px',
+					marginTop : '45px',
+					border : '1px #777 solid',
+					borderRadius : '7px'
+				}
+			])
+		}),
+		members : [
+			TemplateFactory.createDef({
+				host : TemplateFactory.createDef({
+					type : 'SimpleTextReplace',
+					nodeName : 'p'
+				})
+			}),
+			TemplateFactory.createDef({
+				host : TemplateFactory.createDef({
+					type : 'ColorPickerSliderInput',
+				}),
+				options : {
+					initialLeft : 0,
+					xMax : options.width
+				}
+			}),
+			TemplateFactory.createDef({
+				host : TemplateFactory.createDef({
+					type : 'ColorPickerSliderInput',
+				}),
+				options : {
+					initialLeft : options.width,
+					xMax : options.width
+				}
+			})
+		]
+	});
+}
+
+module.exports = gradientGeneratorDef;
+},{"formantjs":3}],19:[function(_dereq_,module,exports){
+/**
+ * @constructor GradientGenerator
+ * @author : Kinegraphx
+*/
+
+const {App, TemplateFactory, Components} = _dereq_('formantjs');
+
+var createGradientGeneratorHostDef = _dereq_('src/App/components/GradientGenerator/componentDefs/gradientGeneratorHostDef');
+//var createGradientGeneratorSlotsDef = require('src/UI/categories/_recentlyCreated/GradientGenerator/componentDefs/GradientGeneratorSlotsDef');
+
+const GradientGenerator = function(definition, parentView, options) {
+	if (definition === null) {
+		definition = TemplateFactory.mockGroupDef();
+	}
+	definition.getHostDef().options = {width : options.width};
+	
+	Components.CompositorComponent.call(this, definition, parentView, parent);
+	this.objectType = 'GradientGenerator';
+	
+	this.colors = [];
+}
+GradientGenerator.prototype = Object.create(Components.CompositorComponent.prototype);
+GradientGenerator.prototype.extendsCore = "CompoundComponentWithHooks";
+GradientGenerator.prototype.objectType = 'GradientGenerator';
+
+GradientGenerator.prototype.createDefaultDef = function(definition) {
+	return createGradientGeneratorHostDef(definition.options);
+}
+
+GradientGenerator.prototype._asyncRegisterTasks = [];
+GradientGenerator.prototype._asyncRegisterTasks.push(new TemplateFactory.TaskDefinitionModel({
+	type : 'lateBinding',
+	task : function() {
+		this._children.forEach(function(child, key) {
+			if (key > 0)
+				this.colors.push({
+					color : '',
+					position : (child._key - 1) * 100
+				})
+		}, this);
+	}
+}));
+
+App.componentTypes.GradientGenerator = GradientGenerator;
+module.exports = GradientGenerator;
+},{"formantjs":3,"src/App/components/GradientGenerator/componentDefs/gradientGeneratorHostDef":18}],20:[function(_dereq_,module,exports){
 const dummyData = {
 	adjectives : ["pretty", "large", "big", "small", "tall", "short", "long", "handsome", "plain", "quaint", "clean", "elegant", "easy", "angry", "crazy", "helpful", "mushy", "odd", "unsightly", "adorable", "important", "inexpensive", "cheap", "expensive", "fancy"],
 	colours : ["red", "yellow", "blue", "green", "pink", "brown", "purple", "brown", "white", "black", "orange"],
@@ -47873,7 +48219,7 @@ function randomOn(max) {
 
 module.exports = buildData;
 
-},{}],18:[function(_dereq_,module,exports){
+},{}],21:[function(_dereq_,module,exports){
 const dummyData = {
     adjectives : ["pretty", "large", "big", "small", "tall", "short", "long", "handsome", "plain", "quaint", "clean", "elegant", "easy", "angry", "crazy", "helpful", "mushy", "odd", "unsightly", "adorable", "important", "inexpensive", "cheap", "expensive", "fancy"],
     colours : ["red", "yellow", "blue", "green", "pink", "brown", "purple", "brown", "white", "black", "orange"],
@@ -47898,7 +48244,7 @@ function randomOn(max) {
 	
 module.exports = buildData;
 
-},{}],19:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 const {App, TemplateFactory, CoreTypes, validators} = _dereq_('formantjs');
 const SourceInjectionUtility = App.componentTypes.SourceInjectionUtility;
 const sourceCodeIndex = _dereq_('cache/stringifiedSources').sourcesAsStringArrays;
@@ -47915,7 +48261,8 @@ const codeSamples = {
 	customReactiveList : _dereq_('src/App/codeSamples/customReactiveListLauncher'),
 	table101 : _dereq_('src/App/codeSamples/table101Launcher'),
 	tableComponent : _dereq_('src/App/codeSamples/tableComponentLauncher'),
-	behaviorsTableSelect : _dereq_('src/App/codeSamples/behaviorsTableSelect')
+	behaviorsTableSelect : _dereq_('src/App/codeSamples/behaviorsTableSelect'),
+	gradientGenerator : _dereq_('src/App/codeSamples/gradientGeneratorLauncher')
 };
 
 /**
@@ -47952,7 +48299,9 @@ module.exports = function(parentView) {
 		componentView : CoreTypes
 	}
 };
-},{"cache/stringifiedSources":4,"formantjs":3,"src/App/codeSamples/behaviorsTableSelect":5,"src/App/codeSamples/customReactiveListLauncher":6,"src/App/codeSamples/form101Launcher":7,"src/App/codeSamples/graphQLCaseStudyLauncher":8,"src/App/codeSamples/list101Launcher":9,"src/App/codeSamples/minimalHelloWorldLauncher":10,"src/App/codeSamples/reactiveHelloWorldLauncher":11,"src/App/codeSamples/reactiveListComponentLauncher":12,"src/App/codeSamples/stylingBasicsLauncher":13,"src/App/codeSamples/table101Launcher":14,"src/App/codeSamples/tableComponentLauncher":16,"src/App/templates/DocumentationAppMainTabPanelDef":20}],20:[function(_dereq_,module,exports){
+
+//module.exports = codeSamples.gradientGeneratorLauncher;
+},{"cache/stringifiedSources":4,"formantjs":3,"src/App/codeSamples/behaviorsTableSelect":5,"src/App/codeSamples/customReactiveListLauncher":6,"src/App/codeSamples/form101Launcher":7,"src/App/codeSamples/gradientGeneratorLauncher":8,"src/App/codeSamples/graphQLCaseStudyLauncher":9,"src/App/codeSamples/list101Launcher":10,"src/App/codeSamples/minimalHelloWorldLauncher":11,"src/App/codeSamples/reactiveHelloWorldLauncher":12,"src/App/codeSamples/reactiveListComponentLauncher":13,"src/App/codeSamples/stylingBasicsLauncher":14,"src/App/codeSamples/table101Launcher":15,"src/App/codeSamples/tableComponentLauncher":17,"src/App/templates/DocumentationAppMainTabPanelDef":23}],23:[function(_dereq_,module,exports){
 /**
  * definition helper
  */
@@ -47992,8 +48341,8 @@ defForStyle.lists[0].getHostDef().template.getHostDef().sOverride = [
 ];
  
  module.exports = defForStyle;
-},{"src/UI/categories/tabs/TabPanel/componentDefs/TabPanelHostDef":2}],21:[function(_dereq_,module,exports){
-const {appConstants, App} = _dereq_('formantjs');
+},{"src/UI/categories/tabs/TabPanel/componentDefs/TabPanelHostDef":2}],24:[function(_dereq_,module,exports){
+const {appConstants, App, Components} = _dereq_('formantjs');
 
 App.data.stringifiedSources = _dereq_('cache/stringifiedSources').sourcesAsStringArrays;
 (function () {
@@ -48002,8 +48351,9 @@ App.data.stringifiedSources = _dereq_('cache/stringifiedSources').sourcesAsStrin
 	});
 	
 	this.DocumentationAppLauncher = _dereq_('src/App/launcher/DocumentationAppLauncher');
+	
 }).call(window);
-},{"cache/stringifiedSources":4,"formantjs":3,"src/App/launcher/DocumentationAppLauncher":19}]},{},[21])
+},{"cache/stringifiedSources":4,"formantjs":3,"src/App/launcher/DocumentationAppLauncher":22}]},{},[24])
 //# sourceMappingURL=DocumentationApp.js.map
 
 // Get compatibility with node.js and standalone engines
