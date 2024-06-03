@@ -5,16 +5,15 @@
 
 const {App, TemplateFactory, Components} = require('formantjs');
 
-var createGradientGeneratorHostDef = require('src/App/components/GradientGenerator/componentDefs/gradientGeneratorHostDef');
-//var createGradientGeneratorSlotsDef = require('src/UI/categories/_recentlyCreated/GradientGenerator/componentDefs/GradientGeneratorSlotsDef');
+const createGradientGeneratorHostDef = require('src/App/components/GradientGenerator/componentDefs/gradientGeneratorHostDef');
 
-const GradientGenerator = function(definition, parentView, options) {
-	if (definition === null) {
-		definition = TemplateFactory.mockGroupDef();
+const GradientGenerator = function(template, parentView, options) {
+	if (template === null) {
+		template = TemplateFactory.mockGroupDef();
 	}
-	definition.getHostDef().options = {width : options.width};
+	template.getHostDef().options = {width : options.width};
 	
-	Components.CompositorComponent.call(this, definition, parentView, parent);
+	Components.CompositorComponent.call(this, template, parentView);
 	this.objectType = 'GradientGenerator';
 	
 	this.colors = [];
@@ -23,8 +22,8 @@ GradientGenerator.prototype = Object.create(Components.CompositorComponent.proto
 GradientGenerator.prototype.extendsCore = "CompoundComponentWithHooks";
 GradientGenerator.prototype.objectType = 'GradientGenerator';
 
-GradientGenerator.prototype.createDefaultDef = function(definition) {
-	return createGradientGeneratorHostDef(definition.options);
+GradientGenerator.prototype.createDefaultDef = function(template) {
+	return createGradientGeneratorHostDef(template.options);
 }
 
 GradientGenerator.prototype._asyncRegisterTasks = [];

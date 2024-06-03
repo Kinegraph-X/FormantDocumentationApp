@@ -8,12 +8,12 @@ module.exports = function(parentView) {
 			const root = new App.RootView();
 			const gradientGenerator = new GradientGenerator(null, root.view, {width : 400});
 			
-			const componentToInject = App.renderDOM(null, gradientGenerator);
+			App.renderDOM();
 			
 			gradientGenerator._children[1].streams['currentColor'].value = '#507090'; 
 			gradientGenerator._children[2].streams['currentColor'].value = '#EECC22';
 			
-			return componentToInject;
+			return gradientGenerator;
 		}
 	}
 }

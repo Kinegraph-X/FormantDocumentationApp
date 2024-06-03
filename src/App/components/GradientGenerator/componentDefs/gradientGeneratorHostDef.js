@@ -7,7 +7,7 @@
 const {TemplateFactory, CreateStyle} = require('formantjs');
 
 
-var gradientGeneratorDef = function(options) {
+const gradientGeneratorTemplateFactory  = function(options) {
 	
 	return TemplateFactory.createDef({
 		host : TemplateFactory.createHostDef({
@@ -38,7 +38,7 @@ var gradientGeneratorDef = function(options) {
 				{
 					selector : ':host',
 					color : '#777',
-					position: 'absolute',
+					position: 'relative',
 					left: '50%',
 					marginLeft : -(options.width / 2) + 'px',
 					marginTop : '50px', 
@@ -87,4 +87,4 @@ var gradientGeneratorDef = function(options) {
 	});
 }
 
-module.exports = gradientGeneratorDef;
+module.exports = gradientGeneratorTemplateFactory;

@@ -8,7 +8,8 @@ const defForStyle = tabPanelDefinition();
 defForStyle.getGroupHostDef().sOverride = [
 	{
 		selector : ':host',
-		display : 'flex'
+		display : 'flex',
+		color : '#f9f7f2'
 	},
 	{
 		selector : ':host pseudo-slot',

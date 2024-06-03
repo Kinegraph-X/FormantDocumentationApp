@@ -53,4 +53,4 @@ module.exports = function(parentView) {
 	}
 };
 
-//module.exports = codeSamples.gradientGeneratorLauncher;
+//module.exports = codeSamples.gradientGenerator;
